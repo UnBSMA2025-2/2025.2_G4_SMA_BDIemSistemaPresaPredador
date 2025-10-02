@@ -1,0 +1,7 @@
+.md-typeset p {
+  text-align: justify;
+}
+
+.md-typeset p.autores-tabela {
+  text-align: center !important;
+}
