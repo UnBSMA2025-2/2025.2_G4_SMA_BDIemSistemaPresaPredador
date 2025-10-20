@@ -13,13 +13,13 @@ As seções do Template NÃO DEVEM SER OMITIDAS, sendo TODAS RELEVANTES.
 # NomeDoProjeto
 
 **Disciplina**: FGA0053 - Sistemas Multiagentes <br>
-**Nro do Grupo (de acordo com a Planilha de Divisão dos Grupos)**: XX<br>
-**Frente de Pesquisa**: XXXXXXXXXX<br>
+**Nro do Grupo (de acordo com a Planilha de Divisão dos Grupos)**: 04<br>
+**Frente de Pesquisa**: Modelo BDI aplicado a simulações de mundo de RPG (Role-Playing Game)<br>
 
 ## Alunos
 |Matrícula | Aluno |
 | -- | -- |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
+| 21/1039662  |  Pedro Henrique da Silva Melo |
 | xx/xxxxxx  |  xxxx xxxx xxxxx |
 
 ## Sobre 
@@ -31,11 +31,29 @@ Capriche nessa seção, pois ela é a primeira a ser lida pelos interessados no 
 Adicione 2 ou mais screenshots do projeto em termos de interface e/ou funcionamento.
 
 ## Instalação 
-**Linguagens**: xxxxxx<br>
-**Tecnologias**: xxxxxx<br>
+**Linguagens**: Python<br>
+**Tecnologias**: MESA<br>
 Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
 Insira um manual ou um script para auxiliar ainda mais.
 Gifs animados e outras ilustrações são bem-vindos!
+
+### Configuração de ambiente via Makefile
+Para configurar o ambiente, primeiro entre dentro da pasta code a partir da raiz do projeto:
+```
+cd code
+```
+Em seguida, execute, **APENAS UMA VEZ**, o comando abaixo para instalar o ambiente virtual python (venv) junto com as dependências do projeto, como o MESA framework:
+```
+make setup
+```
+Para iniciar o ambiente configurado, execute o seguinte comando:
+```
+make run
+```
+Se quiser limpar o ambiente, e reiniciar novamente, pode fazer por meio do comando:
+```
+make clean
+```
 
 ## Uso 
 Explique como usar seu projeto.
