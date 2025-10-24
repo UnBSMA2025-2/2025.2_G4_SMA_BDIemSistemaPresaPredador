@@ -1,4 +1,4 @@
-from Iterfaces.IBDI_Agent import IBDI_Agent
+from Interfaces.IBDI_Agent import IBDI_Agent
 
 class Character_Agent(IBDI_Agent):
     """
@@ -31,7 +31,7 @@ class Character_Agent(IBDI_Agent):
             print("  Status: Derrotado.")
         print("-" * (20 + len(self.nome) + len(str(self.unique_id))))
 
-    def enviar_status_ataque(self, recipient_id):
+    def atacar_alvo(self, recipient_id):
         """
         (Novo Comportamento - Ação de Envio)
         Envia uma mensagem contendo o valor de ataque do agente
@@ -41,7 +41,7 @@ class Character_Agent(IBDI_Agent):
         
         # 1. Define o conteúdo da mensagem
         message_content = {
-            'type': 'status_attack',  # Tipo da mensagem
+            'type': 'attack',  # Tipo da mensagem
             'value': self.attack       # O dado da mensagem
         }
         # 2. Chama o método do modelo para "postar" a mensagem
@@ -66,6 +66,7 @@ class Character_Agent(IBDI_Agent):
         pass
 
     def step(self):
+        print(f"Executando step do personagem...")
         self.update_beliefs()
         # self.deliberate()
         # self.execute_plan()
