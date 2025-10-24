@@ -1,6 +1,5 @@
 # Framework principal para modelagem de agentes
-mesa==2.4.0
-
+mesa[rec]==3.1.0
 # Bibliotecas comuns para análise e visualização de dados
 pandas==2.3.2
 matplotlib==3.10.6
