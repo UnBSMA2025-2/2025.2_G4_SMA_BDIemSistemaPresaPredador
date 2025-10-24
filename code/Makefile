@@ -19,7 +19,7 @@ setup:
 	@echo "-> Ativando ambiente e instalando dependências de 'requirements.txt'..."
 	. $(VENV_DIR)/bin/activate; pip install -r requirements.txt
 	
-	@echo "-> Ambiente configurado com sucesso! ✨"
+	@echo "-> Ambiente configurado com sucesso"
 	@echo "-> Para executar a simulação, use: make run"
 
 run:
