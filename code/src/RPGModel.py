@@ -86,7 +86,7 @@ class RPGModel(mesa.Model):
         )))
         
         print(f"[Modelo (Orquestrador)]: Acionando (ID 1) para ATACAR (ID 2)...")
-        agente1.atacar_alvo(recipient_id=2)
+        agente1.attack_target(recipient_id=2)
         agente2.step()
         # self.step()
         

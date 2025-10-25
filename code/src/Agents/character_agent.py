@@ -21,7 +21,7 @@ class Character_Agent(IBDI_Agent):
             'defense': self.defense
         }
 
-    def se_apresentar(self):
+    def introduce_yourself(self):
         print(f"--- Apresentação do personagem: {self.unique_id} ({self.nome}) ---")
         if self.is_alive:
             print(f"  Vida: {self.life}")
@@ -31,7 +31,7 @@ class Character_Agent(IBDI_Agent):
             print("  Status: Derrotado.")
         print("-" * (20 + len(self.nome) + len(str(self.unique_id))))
 
-    def atacar_alvo(self, recipient_id):
+    def attack_target(self, recipient_id):
         """
         (Novo Comportamento - Ação de Envio)
         Envia uma mensagem contendo o valor de ataque do agente

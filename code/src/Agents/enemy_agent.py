@@ -19,7 +19,7 @@ class Enemy_Agent(IBDI_Agent):
             'defense': self.defense
         }
 
-    def processar_mensagens(self, messages):
+    def process_messages(self, messages):
         """
         Processa uma lista de mensagens recebidas.
         """
@@ -49,7 +49,7 @@ class Enemy_Agent(IBDI_Agent):
             else:
                 print(f"  > Agente {self.unique_id} ({self.nome}): Recebi mensagem desconhecida de {sender}: {content['type']}")
 
-    def se_apresentar(self):
+    def introduce_yourself(self):
         print(f"--- Apresentação do inimigo: {self.unique_id} ({self.nome}) ---")
         if self.is_alive:
             print(f"  Vida: {self.life}")
@@ -70,7 +70,7 @@ class Enemy_Agent(IBDI_Agent):
         
         if mensagens_recebidas:
             # Se houver mensagens, processa-as
-            self.processar_mensagens(mensagens_recebidas)
+            self.process_messages(mensagens_recebidas)
             
         # 3. Atualizar estado de vida (após processar dano)
         if self.life <= 0 and self.is_alive:
