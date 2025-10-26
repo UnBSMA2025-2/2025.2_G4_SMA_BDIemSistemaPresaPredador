@@ -1,7 +1,7 @@
 import abc
-import mesa
+from mesa.discrete_space import CellAgent 
 
-class IBDI_Agent(mesa.Agent, abc.ABC):
+class IBDI_Agent(CellAgent, abc.ABC):
     """
     Interface (Classe Base Abstrata) para Agentes com arquitetura BDI.
     

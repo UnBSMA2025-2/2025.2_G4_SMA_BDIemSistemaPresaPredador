@@ -4,9 +4,11 @@ class Character_Agent(IBDI_Agent):
     """
     Um agente que representa um personagem de RPG com lógica BDI.
     """
-    def __init__(self, model, life, attack, defense, nome="Personagem"):
+    def __init__(self, model, cell, life, attack, defense, nome="Personagem"):
         # Inicializa a interface IBDI_Agent (que inicializa mesa.Agent)
         super().__init__(model)
+        
+        self.cell = cell
         
         # --- Atributos Básicos do RPG ---
         self.nome = nome
@@ -21,12 +23,16 @@ class Character_Agent(IBDI_Agent):
             'defense': self.defense
         }
 
+    def move(self):
+        self.cell = self.cell.neighborhood.select_random_cell()
+
     def introduce_yourself(self):
         print(f"--- Apresentação do personagem: {self.unique_id} ({self.nome}) ---")
         if self.is_alive:
             print(f"  Vida: {self.life}")
             print(f"  Ataque: {self.attack}")
             print(f"  Defesa: {self.defense}")
+            print(f"  Posição: {self.cell}")
         else:
             print("  Status: Derrotado.")
         print("-" * (20 + len(self.nome) + len(str(self.unique_id))))
