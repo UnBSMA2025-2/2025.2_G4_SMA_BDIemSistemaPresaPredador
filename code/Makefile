@@ -10,21 +10,21 @@ help:
 	@echo "  make clean   -> Remove o ambiente virtual e ficheiros temporários."
 
 install: venv
-	$(VENV_DIR)/bin/pip install -r requirements.txt
+	$(VENV_DIR)/bin/pip install mesa[rec] 
 
 setup:
 	@echo "-> Verificando/Criando o ambiente virtual em '$(VENV_DIR)'..."
 	@test -d $(VENV_DIR) || $(PYTHON) -m venv $(VENV_DIR)
 	
 	@echo "-> Ativando ambiente e instalando dependências de 'requirements.txt'..."
-	. $(VENV_DIR)/bin/activate; pip install -r requirements.txt
+	. $(VENV_DIR)/bin/activate; pip install mesa[rec] 
 	
 	@echo "-> Ambiente configurado com sucesso"
 	@echo "-> Para executar a simulação, use: make run"
 
 run:
 	@echo "-> Executando o servidor da simulação MESA..."
-	. $(VENV_DIR)/bin/activate; $(PYTHON) src/run.py
+	. $(VENV_DIR)/bin/activate; $(PYTHON) src/main.py
 
 clean:
 	@echo "-> Removendo ambiente virtual '$(VENV_DIR)'..."

@@ -12,6 +12,7 @@ class RPGModel(mesa.Model):
         Inicializa o modelo, o scheduler e cria o agente único.
         """
         super().__init__(seed=seed)
+        self.message_box = {}
         
         Character_Agent.create_agents(
             model=self,
@@ -69,13 +70,8 @@ class RPGModel(mesa.Model):
         print(f"--- Início do Passo {self.steps} da Simulação ---")
 
         self.message_box = {}
+        
         self.agents.shuffle_do("step")
-
-        def getAgentById(agents, agent_id):
-            for agent in agents:
-                if agent.unique_id == agent_id:
-                    return agent
-            return null
 
         agente1 = next(iter(self.agents.select(
             lambda agent: agent.nome == "Marllon" 
@@ -88,6 +84,7 @@ class RPGModel(mesa.Model):
         print(f"[Modelo (Orquestrador)]: Acionando (ID 1) para ATACAR (ID 2)...")
         agente1.atacar_alvo(recipient_id=2)
         agente2.step()
+        
         # self.step()
         
         print(f"[Modelo (Correio)]: Status final da 'message_box': {self.message_box}")

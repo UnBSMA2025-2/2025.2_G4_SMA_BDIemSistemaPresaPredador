@@ -1,8 +1,2 @@
 # Framework principal para modelagem de agentes
-mesa==2.4.0
-
-# Bibliotecas comuns para análise e visualização de dados
-pandas==2.3.2
-matplotlib==3.10.6
-# Para data visualizations
-seaborn==0.13.2
+mesa==3.0.0
