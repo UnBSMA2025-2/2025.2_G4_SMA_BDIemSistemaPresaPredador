@@ -37,7 +37,10 @@ Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
 Insira um manual ou um script para auxiliar ainda mais.
 Gifs animados e outras ilustrações são bem-vindos!
 
-### Configuração de ambiente via Makefile
+### Pré-requisitos
+* Python 3.12 ou acima
+
+### Configuração de ambiente via Makefile (Linux)
 Para configurar o ambiente, primeiro entre dentro da pasta code a partir da raiz do projeto:
 ```
 cd code
