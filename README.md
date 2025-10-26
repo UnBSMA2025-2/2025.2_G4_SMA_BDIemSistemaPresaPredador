@@ -20,7 +20,9 @@ As seções do Template NÃO DEVEM SER OMITIDAS, sendo TODAS RELEVANTES.
 |Matrícula | Aluno |
 | -- | -- |
 | 21/1039662  |  Pedro Henrique da Silva Melo |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
+| 22/2025914  |  Marllon Fausto Cardoso |
+| 20/2063300  |  João Pedro Rodrigues Morbeck |
+| 19/0117508  |  Thiago Cerqueira Borges |
 
 ## Sobre 
 Descreva o seu projeto em linhas gerais. 
