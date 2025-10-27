@@ -23,8 +23,21 @@ class Character_Agent(IBDI_Agent):
             'defense': self.defense
         }
 
-    def move(self):
-        self.cell = self.cell.neighborhood.select_random_cell()
+    def move(self, coordinate=(0,0)):
+        print(self.cell)
+        new_cell = next(iter(self.model.grid.all_cells.select(
+            lambda cell: cell.coordinate == coordinate
+        )))
+        
+        if new_cell.is_empty:
+            # self.model.grid.move_agent(self, coordinate)
+            self.cell = new_cell
+            print(self.cell)
+            
+        # newCell = self.model.grid[coordinate[0]][coordinate[1]]
+        # if newCell.is_empty:
+        #     self.model.grid.move_agent(self, coordinate)
+        #     print(f'Posição nova: {self.pos}')
 
     def introduce_yourself(self):
         print(f"--- Apresentação do personagem: {self.unique_id} ({self.nome}) ---")

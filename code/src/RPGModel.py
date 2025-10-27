@@ -16,7 +16,7 @@ class RPGModel(mesa.Model):
         self.message_box = {}
         self.num_agents = n
         self.grid = OrthogonalMooreGrid(
-            (width, height), torus=True, capacity=10, random=self.random
+            (width, height), torus=True, capacity=1, random=self.random
         )
         
         agents = Character_Agent.create_agents(
@@ -77,8 +77,8 @@ class RPGModel(mesa.Model):
 
         self.message_box = {}
         
-        self.agents.shuffle_do("move")
-        self.agents.do("introduce_yourself")
+        self.agents.shuffle_do("move", (1,6))
+        # self.agents.do("introduce_yourself")
         
         # tentando fazer o personagem enviar a mensagem:
         # character_agent = self.agents.select(
