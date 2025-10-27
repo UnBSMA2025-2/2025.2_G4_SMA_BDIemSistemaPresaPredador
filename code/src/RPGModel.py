@@ -28,6 +28,15 @@ class RPGModel(mesa.Model):
             defense=30,
             nome="Marllon" 
         )
+        agents = Character_Agent.create_agents(
+            model=self,
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
+            n=self.num_agents,
+            life=10,
+            attack=20,
+            defense=30,
+            nome="PH" 
+        )
         # Enemy_Agent.create_agents(
         #     model=self,
         #     n=1,
@@ -77,7 +86,7 @@ class RPGModel(mesa.Model):
 
         self.message_box = {}
         
-        self.agents.shuffle_do("move", (1,6))
+        self.agents.shuffle_do("move_to_target", h=self.grid.height, l=self.grid.width)
         # self.agents.do("introduce_yourself")
         
         # tentando fazer o personagem enviar a mensagem:

@@ -1,10 +1,11 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
+from utils.find_nearest_position import move_to_agent
 
 class Character_Agent(IBDI_Agent):
     """
     Um agente que representa um personagem de RPG com lógica BDI.
     """
-    def __init__(self, model, cell, life, attack, defense, nome="Personagem"):
+    def __init__(self, model, cell, life, attack, defense, nome="Personagem", displacement=3):
         # Inicializa a interface IBDI_Agent (que inicializa mesa.Agent)
         super().__init__(model)
         
@@ -15,6 +16,7 @@ class Character_Agent(IBDI_Agent):
         self.life = life
         self.attack = attack
         self.defense = defense
+        self.displacement = displacement
         self.is_alive = True if self.life > 0 else False
 
         self.beliefs['my_health'] = self.life
@@ -23,21 +25,39 @@ class Character_Agent(IBDI_Agent):
             'defense': self.defense
         }
 
-    def move(self, coordinate=(0,0)):
-        print(self.cell)
+    def move_to_target(self, target_coordinate=(0,0), h=10, l=10):
+        pos_a = self.cell.coordinate
+        pos_b = target_coordinate
+        
+        new_position = move_to_agent(
+            h, 
+            l, 
+            pos_a[0],
+            pos_a[1],
+            pos_b[0], 
+            pos_b[1], 
+            self.displacement
+        )
+        
         new_cell = next(iter(self.model.grid.all_cells.select(
-            lambda cell: cell.coordinate == coordinate
+            lambda cell: cell.coordinate == new_position
         )))
         
         if new_cell.is_empty:
-            # self.model.grid.move_agent(self, coordinate)
             self.cell = new_cell
-            print(self.cell)
-            
-        # newCell = self.model.grid[coordinate[0]][coordinate[1]]
-        # if newCell.is_empty:
-        #     self.model.grid.move_agent(self, coordinate)
-        #     print(f'Posição nova: {self.pos}')
+        else:
+            if target_coordinate[0] == 0: return self.move_to_target(
+                (target_coordinate[0]+1, target_coordinate[1]), h, l
+            )
+            elif target_coordinate[0] == h: return self.move_to_target(
+                (target_coordinate[0]-1, target_coordinate[1]), h, l
+            )
+            elif target_coordinate[1] == 0: return self.move_to_target(
+                (target_coordinate[0], target_coordinate[1]+1), h, l
+            )
+            elif target_coordinate[1] == l: return self.move_to_target(
+                (target_coordinate[0], target_coordinate[1]-1), h, l
+            )
 
     def introduce_yourself(self):
         print(f"--- Apresentação do personagem: {self.unique_id} ({self.nome}) ---")
