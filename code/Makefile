@@ -1,5 +1,6 @@
 VENV_DIR = .venv
 PYTHON = python3.12
+SOLARA = solara run 
 
 .PHONY: setup run clean help
 
@@ -31,8 +32,8 @@ runExample:
 	. $(VENV_DIR)/bin/activate; $(PYTHON) src/RunExampleModel.py
 
 run:
-	@echo "-> Executando o servidor da simulação do nosso mundo de RPG..."
-	. $(VENV_DIR)/bin/activate; $(PYTHON) src/main.py
+	@echo "-> Executando o servidor da simulação do mundo RPG..."
+	. $(VENV_DIR)/bin/activate; $(SOLARA) src/main.py
 
 clean:
 	@echo "-> Removendo ambiente virtual '$(VENV_DIR)'..."
