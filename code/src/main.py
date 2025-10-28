@@ -42,7 +42,7 @@ model_params = {
 }
 
 if __name__ == "__main__":
-    modelo_rpg = RPGModel(width=10, height=10, n=1)
+    modelo_rpg = RPGModel(width=30, height=15, n=1)
     
     renderer = SpaceRenderer(model=modelo_rpg, backend="matplotlib").render(
         agent_portrayal=agent_portrayal

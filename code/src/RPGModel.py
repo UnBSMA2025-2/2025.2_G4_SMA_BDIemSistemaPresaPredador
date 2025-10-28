@@ -28,7 +28,7 @@ class RPGModel(mesa.Model):
             'att': 60,
             'classe': 'LADINO',
             'iniciativa': 14,
-            'deslocamento': 4,
+            'displacement': 4,
             'em_batalha': True,
             'hp_agente_alvo': 40,
             'num_healing': 2,
@@ -42,7 +42,7 @@ class RPGModel(mesa.Model):
             'att': 100,
             'classe': 'MAGO',
             'iniciativa': 14,
-            'deslocamento': 3,
+            'displacement': 3,
             'em_batalha': True,
             'hp_agente_alvo': 9,
             'num_healing': 2,
@@ -60,13 +60,6 @@ class RPGModel(mesa.Model):
             n=self.num_agents,
             beliefs=beliefs2
         )
-        # Enemy_Agent.create_agents(
-        #     model=self,
-        #     n=1,
-        #     life=5,
-        #     defense=15,
-        #     nome="Lobo"
-        # )
 
     def send_message(self, sender_id, recipient_id, content):
         """

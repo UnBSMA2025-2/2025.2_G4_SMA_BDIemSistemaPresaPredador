@@ -3,7 +3,6 @@ from utils.move_to_agent import move_to_agent
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
 import random
 
-
 class Character_Agent(IBDI_Agent):
     """
     Um agente que representa um personagem de RPG com lógica BDI.
@@ -36,7 +35,7 @@ class Character_Agent(IBDI_Agent):
             pos_a[1],
             pos_b[0], 
             pos_b[1], 
-            self.beliefs['deslocamento']
+            self.beliefs['displacement']
         )
         
         new_cell = next(iter(self.model.grid.all_cells.select(
@@ -74,11 +73,15 @@ class Character_Agent(IBDI_Agent):
             enemyAgent.beliefs['hp'] = newHpEnemy
 
     def heal(self):
-        print(f' HP antes: {self.beliefs['hp']}')
         if self.beliefs['num_healing'] > 0:
             self.beliefs['hp'] += random.randint(1, 4)
             self.beliefs['num_healing'] -= 1
-            print(f' HP depois: {self.beliefs['hp']}')
+
+    def escape(self):
+        vizinho = self.cell.get_neighborhood(
+            self.beliefs['displacement']).select_random_cell()
+        
+        self.move_to_target(vizinho.coordinate)
 
     def update_beliefs(self):
         pass
@@ -90,11 +93,10 @@ class Character_Agent(IBDI_Agent):
         match self.intention:
             case 'CURAR':
                 self.heal()
-                pass
             case 'ATACAR INIMIGO':
                 self.attack_enemy(1)
             case 'FUGIR':
-                pass
+                self.escape()
             case _:
                 pass
 
@@ -102,5 +104,5 @@ class Character_Agent(IBDI_Agent):
         print(f"Executando step do personagem...")
         self.update_beliefs()
         self.deliberate()
+        print(f'INTENÇÃO: {self.intention}')
         self.execute_plan()
-        print(self.intention)
