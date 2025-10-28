@@ -19,23 +19,46 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
         
+        beliefs1 = {
+            'name': 'Marllon',
+            'hp': 10,
+            'hpMax': 100,
+            'deff': 30,
+            'att': 60,
+            'classe': 'LADINO',
+            'iniciativa': 14,
+            'deslocamento': 4,
+            'em_batalha': True,
+            'hp_agente_alvo': 40,
+            'morrendo': False,
+            'curas': 2,
+        }
+        beliefs2 = {
+            'name': 'Lucas',
+            'hp': 40,
+            'hpMax': 50,
+            'deff': 10,
+            'att': 100,
+            'classe': 'MAGO',
+            'iniciativa': 14,
+            'deslocamento': 3,
+            'em_batalha': True,
+            'hp_agente_alvo': 9,
+            'morrendo': False,
+            'curas': 2,
+        }
+        
         agents = Character_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            life=10,
-            attack=20,
-            defense=30,
-            nome="Marllon" 
+            beliefs=beliefs1
         )
         agents = Character_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            life=10,
-            attack=20,
-            defense=30,
-            nome="PH" 
+            beliefs=beliefs2
         )
         # Enemy_Agent.create_agents(
         #     model=self,
@@ -86,30 +109,6 @@ class RPGModel(mesa.Model):
 
         self.message_box = {}
         
-        self.agents.shuffle_do("move_to_target", h=self.grid.height, l=self.grid.width)
-        # self.agents.do("introduce_yourself")
+        self.agents.shuffle_do("step")
         
-        # tentando fazer o personagem enviar a mensagem:
-        # character_agent = self.agents.select(
-        #     lambda agent: agent.nome == "Marllon"
-        # )
-        # character_agent.shuffle_do("attack_target")
-
-        # agente1 = next(iter(self.agents.select(
-        #     lambda agent: agent.nome == "Marllon" 
-        # )))
-
-        # agente2 = next(iter(self.agents.select(
-        #     lambda agent: agent.nome == "Lobo" 
-        # )))
-        
-        # print(f"[Modelo (Orquestrador)]: Acionando (ID 1) para ATACAR (ID 2)...")
-        # agente1.attack_target(recipient_id=2)
-        # agente2.step()
-        
-        # # self.step()
-        
-        # print(f"[Modelo (Correio)]: Status final da 'message_box': {self.message_box}")
-        
-        # print(f"--- Fim do Passo {self.steps} da Simulação ---")
         print("="*40)

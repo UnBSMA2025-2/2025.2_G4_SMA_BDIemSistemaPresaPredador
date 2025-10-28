@@ -1,30 +1,28 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from utils.get_intention_id import get_intention_id
+from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+
 
 class Character_Agent(IBDI_Agent):
     """
     Um agente que representa um personagem de RPG com lógica BDI.
     """
-    def __init__(self, model, cell, life, attack, defense, nome="Personagem", displacement=3):
-        # Inicializa a interface IBDI_Agent (que inicializa mesa.Agent)
+    def __init__(
+        self, 
+        model, 
+        cell, 
+        beliefs
+        ):
         super().__init__(model)
-        
         self.cell = cell
         
-        # --- Atributos Básicos do RPG ---
-        self.nome = nome
-        self.life = life
-        self.attack = attack
-        self.defense = defense
-        self.displacement = displacement
-        self.is_alive = True if self.life > 0 else False
-
-        self.beliefs['my_health'] = self.life
-        self.beliefs['my_stats'] = {
-            'attack': self.attack,
-            'defense': self.defense
-        }
+        self.plan_library = {
+        'SURVIVE': SurvivePlanLogic()
+        }         
+        
+        self.beliefs = beliefs
+        self.desires = ['SURVIVE']
         self.intention = None
 
     def move_to_target(self, target_coordinate=(0,0), h=10, l=10):
@@ -38,7 +36,7 @@ class Character_Agent(IBDI_Agent):
             pos_a[1],
             pos_b[0], 
             pos_b[1], 
-            self.displacement
+            self.beliefs['deslocamento']
         )
         
         new_cell = next(iter(self.model.grid.all_cells.select(
@@ -60,43 +58,12 @@ class Character_Agent(IBDI_Agent):
             elif target_coordinate[1] == l: return self.move_to_target(
                 (target_coordinate[0], target_coordinate[1]-1), h, l
             )
-
-    def introduce_yourself(self):
-        print(f"--- Apresentação do personagem: {self.unique_id} ({self.nome}) ---")
-        if self.is_alive:
-            print(f"  Vida: {self.life}")
-            print(f"  Ataque: {self.attack}")
-            print(f"  Defesa: {self.defense}")
-            print(f"  Posição: {self.cell}")
-        else:
-            print("  Status: Derrotado.")
-        print("-" * (20 + len(self.nome) + len(str(self.unique_id))))
-
-    def attack_target(self, recipient_id):
-        """
-        (Novo Comportamento - Ação de Envio)
-        Envia uma mensagem contendo o valor de ataque do agente
-        para um destinatário específico, usando o "Correio" do modelo.
-        """
-        print(f"  > Agente {self.unique_id} ({self.nome}): Estou enviando meu status de ataque ({self.attack}) para o agente {recipient_id}.")
-        
-        # 1. Define o conteúdo da mensagem
-        message_content = {
-            'type': 'attack',  # Tipo da mensagem
-            'value': self.attack       # O dado da mensagem
-        }
-        # 2. Chama o método do modelo para "postar" a mensagem
-        self.model.send_message(
-            sender_id=self.unique_id,
-            recipient_id=recipient_id,
-            content=message_content
-        )
-    
+ 
     def update_beliefs(self):
         pass
 
     def deliberate(self):
-        self.intention = get_intention_id([0,1,2,3,4,5])
+        self.intention = self.plan_library[self.desires[0]].get_intention(self.beliefs)
 
     def execute_plan(self):
         pass
@@ -104,5 +71,6 @@ class Character_Agent(IBDI_Agent):
     def step(self):
         print(f"Executando step do personagem...")
         self.update_beliefs()
-        # self.deliberate()
-        # self.execute_plan()
+        self.deliberate()
+        self.execute_plan()
+        print(self.intention)
