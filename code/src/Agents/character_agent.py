@@ -1,7 +1,7 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
-from utils.get_intention_id import get_intention_id
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+import random
 
 
 class Character_Agent(IBDI_Agent):
@@ -73,6 +73,13 @@ class Character_Agent(IBDI_Agent):
         else:
             enemyAgent.beliefs['hp'] = newHpEnemy
 
+    def heal(self):
+        print(f' HP antes: {self.beliefs['hp']}')
+        if self.beliefs['num_healing'] > 0:
+            self.beliefs['hp'] += random.randint(1, 4)
+            self.beliefs['num_healing'] -= 1
+            print(f' HP depois: {self.beliefs['hp']}')
+
     def update_beliefs(self):
         pass
 
@@ -82,16 +89,13 @@ class Character_Agent(IBDI_Agent):
     def execute_plan(self):
         match self.intention:
             case 'CURAR':
+                self.heal()
                 pass
-                # Bloco de código se corresponder ao padrao_1
             case 'ATACAR INIMIGO':
                 self.attack_enemy(1)
-                # Bloco de código se corresponder ao padrao_2
             case 'FUGIR':
                 pass
             case _:
-                # Bloco de código "padrão" (default), caso nenhum anterior corresponda
-                # O case _ é opcional
                 pass
 
     def step(self):

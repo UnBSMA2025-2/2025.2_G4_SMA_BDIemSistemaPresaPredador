@@ -27,7 +27,7 @@ class SurvivePlanLogic:
             return context['hp_agente_alvo'] < 10
         
         def cond_tem_curas(context):
-            return context['curas'] > 0
+            return context['num_healing'] > 0
 
         # 2. Construir a árvore e armazenar o "motor"
         raiz = self._build_tree(

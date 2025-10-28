@@ -31,7 +31,7 @@ class RPGModel(mesa.Model):
             'deslocamento': 4,
             'em_batalha': True,
             'hp_agente_alvo': 40,
-            'curas': 2,
+            'num_healing': 2,
         }
         beliefs2 = {
             'name': 'Lucas',
@@ -45,7 +45,7 @@ class RPGModel(mesa.Model):
             'deslocamento': 3,
             'em_batalha': True,
             'hp_agente_alvo': 9,
-            'curas': 2,
+            'num_healing': 2,
         }
         
         agents = Character_Agent.create_agents(
