@@ -1,5 +1,6 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
-from utils.find_nearest_position import move_to_agent
+from utils.move_to_agent import move_to_agent
+from utils.get_intention_id import get_intention_id
 
 class Character_Agent(IBDI_Agent):
     """
@@ -24,6 +25,7 @@ class Character_Agent(IBDI_Agent):
             'attack': self.attack,
             'defense': self.defense
         }
+        self.intention = None
 
     def move_to_target(self, target_coordinate=(0,0), h=10, l=10):
         pos_a = self.cell.coordinate
@@ -91,15 +93,10 @@ class Character_Agent(IBDI_Agent):
         )
     
     def update_beliefs(self):
-        """ 
-        Atualiza as crenças do agente sobre o mundo.
-        """
-        self.beliefs['my_health'] = self.life
-        if self.life <= 0 and self.is_alive:
-            self.is_alive = False
+        pass
 
     def deliberate(self):
-        pass
+        self.intention = get_intention_id([0,1,2,3,4,5])
 
     def execute_plan(self):
         pass

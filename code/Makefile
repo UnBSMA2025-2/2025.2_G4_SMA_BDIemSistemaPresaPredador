@@ -31,9 +31,8 @@ runExample:
 	. $(VENV_DIR)/bin/activate; $(PYTHON) src/RunExampleModel.py
 
 run:
-	@echo "-> Executando o servidor da simulação do nosso mundo de RPG..."
-	. $(VENV_DIR)/bin/activate; $(PYTHON) src/main.py
-
+	@echo "-> Executando o servidor da simulação do nosso mundo de RPG (via Solara)..."
+	. $(VENV_DIR)/bin/activate; solara run ./src/main.py
 clean:
 	@echo "-> Removendo ambiente virtual '$(VENV_DIR)'..."
 	rm -rf $(VENV_DIR)
