@@ -59,6 +59,20 @@ class Character_Agent(IBDI_Agent):
                 (target_coordinate[0], target_coordinate[1]-1), h, l
             )
  
+    def attack_enemy(self, enemyId):
+        enemyAgent = next(iter(self.model.agents.select(
+            lambda agent: agent.unique_id == enemyId
+        )))
+
+        damage = self.beliefs['att'] - enemyAgent.beliefs['def']
+        newHpEnemy = enemyAgent.beliefs['hp'] - max(0, damage)
+        
+        if newHpEnemy <= 0:
+            enemyAgent.beliefs['is_alive'] = False
+            enemyAgent.beliefs['hp'] = 0
+        else:
+            enemyAgent.beliefs['hp'] = newHpEnemy
+
     def update_beliefs(self):
         pass
 
@@ -66,7 +80,19 @@ class Character_Agent(IBDI_Agent):
         self.intention = self.plan_library[self.desires[0]].get_intention(self.beliefs)
 
     def execute_plan(self):
-        pass
+        match self.intention:
+            case 'CURAR':
+                pass
+                # Bloco de código se corresponder ao padrao_1
+            case 'ATACAR INIMIGO':
+                self.attack_enemy(1)
+                # Bloco de código se corresponder ao padrao_2
+            case 'FUGIR':
+                pass
+            case _:
+                # Bloco de código "padrão" (default), caso nenhum anterior corresponda
+                # O case _ é opcional
+                pass
 
     def step(self):
         print(f"Executando step do personagem...")
