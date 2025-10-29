@@ -78,11 +78,11 @@ class Character_Agent(IBDI_Agent):
             self.beliefs['num_healing'] -= 1
 
     def escape(self):
-        vizinho = self.cell.get_neighborhood(
-            self.beliefs['displacement']).select_random_cell()
+        vizinho = self.cell.neighborhood.select_random_cell()
         
         self.move_to_target(vizinho.coordinate)
 
+    # -------- BDI -------- #
     def update_beliefs(self):
         pass
 
@@ -95,6 +95,12 @@ class Character_Agent(IBDI_Agent):
                 self.heal()
             case 'ATACAR INIMIGO':
                 self.attack_enemy(1)
+            case 'APROXIMAR-SE':
+                self.move_to_target(
+                    target_coordinate=self.beliefs['pos_target'],
+                    h=self.model.grid.width,
+                    l=self.model.grid.height,
+                    )
             case 'FUGIR':
                 self.escape()
             case _:
@@ -104,5 +110,6 @@ class Character_Agent(IBDI_Agent):
         print(f"Executando step do personagem...")
         self.update_beliefs()
         self.deliberate()
-        print(f'INTENÇÃO: {self.intention}')
         self.execute_plan()
+        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')
+        print(f'POSIÇÃO [{self.unique_id}]: {self.cell.coordinate}')

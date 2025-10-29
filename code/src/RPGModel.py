@@ -32,6 +32,8 @@ class RPGModel(mesa.Model):
             'em_batalha': True,
             'hp_agente_alvo': 40,
             'num_healing': 2,
+            'pos': (3, 4),
+            'pos_target': (4, 4),
         }
         beliefs2 = {
             'name': 'Lucas',
@@ -46,17 +48,23 @@ class RPGModel(mesa.Model):
             'em_batalha': True,
             'hp_agente_alvo': 9,
             'num_healing': 2,
+            'pos': (4, 4),
+            'pos_target': (3, 4),
         }
         
         agents = Character_Agent.create_agents(
             model=self,
-            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
+            cell=next(iter(self.grid.all_cells.select(
+            lambda cell: cell.coordinate == beliefs1['pos']
+            ))),
             n=self.num_agents,
             beliefs=beliefs1
         )
         agents = Character_Agent.create_agents(
             model=self,
-            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
+            cell=next(iter(self.grid.all_cells.select(
+            lambda cell: cell.coordinate == beliefs2['pos']
+            ))),
             n=self.num_agents,
             beliefs=beliefs2
         )
