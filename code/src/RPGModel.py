@@ -32,8 +32,7 @@ class RPGModel(mesa.Model):
             'em_batalha': True,
             'hp_agente_alvo': 40,
             'num_healing': 2,
-            'pos': (3, 4),
-            'pos_target': (4, 4),
+            'target': None,
         }
         beliefs2 = {
             'name': 'Lucas',
@@ -48,26 +47,31 @@ class RPGModel(mesa.Model):
             'em_batalha': True,
             'hp_agente_alvo': 9,
             'num_healing': 2,
-            'pos': (4, 4),
-            'pos_target': (3, 4),
+            'target': None,
         }
         
-        agents = Character_Agent.create_agents(
+        Character_Agent.create_agents(
             model=self,
-            cell=next(iter(self.grid.all_cells.select(
-            lambda cell: cell.coordinate == beliefs1['pos']
-            ))),
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
             beliefs=beliefs1
         )
-        agents = Character_Agent.create_agents(
+        Character_Agent.create_agents(
             model=self,
-            cell=next(iter(self.grid.all_cells.select(
-            lambda cell: cell.coordinate == beliefs2['pos']
-            ))),
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
             beliefs=beliefs2
         )
+
+        agent1 = next(iter(self.agents.select(
+            lambda agent: agent.unique_id == 1
+        )))
+        agent2 = next(iter(self.agents.select(
+            lambda agent: agent.unique_id == 2
+        )))
+
+        agent1.beliefs['target'] = agent2
+        agent2.beliefs['target'] = agent1
 
     def send_message(self, sender_id, recipient_id, content):
         """

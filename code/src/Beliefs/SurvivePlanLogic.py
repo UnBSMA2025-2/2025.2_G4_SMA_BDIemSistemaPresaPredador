@@ -23,19 +23,19 @@ class SurvivePlanLogic:
             """Condição 1.1: agente_alvo.hp < 10% ?"""
             # NOTA: O 'agente_alvo' deve ser um objeto com um atributo 'hp'
             # Assumindo que '10%' significa '< 10' pontos de HP.
-            if context['hp_agente_alvo'] is None:
+            if context['target'].beliefs['hp'] is None:
                 return False # Não pode ter HP baixo se não há alvo
-            return context['hp_agente_alvo'] < 10
+            return context['target'].beliefs['hp'] < 10
         
         def cond_have_healing(context):
             return context['num_healing'] > 0
         
         def cond_distance(context):
             distance = get_distance(
-                x1=context['pos'][0],
-                y1=context['pos'][1],
-                x2=context['pos_target'][0],
-                y2=context['pos_target'][1],
+                x1=context.cell.coordinate[0],
+                y1=context.cell.coordinate[1],
+                x2=context['target'].cell.coordinate[0],
+                y2=context['target'].cell.coordinate[1],
                 )
             # Assumindo que a crença 'distancia_alvo' existe
             if distance is None:

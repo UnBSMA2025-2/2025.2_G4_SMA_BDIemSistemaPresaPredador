@@ -113,3 +113,4 @@ class Character_Agent(IBDI_Agent):
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')
         print(f'POSIÇÃO [{self.unique_id}]: {self.cell.coordinate}')
+        if self.beliefs['target']: print(f'ALVO [{self.unique_id}]: {self.beliefs['target'].beliefs['name']}')
