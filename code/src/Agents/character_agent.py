@@ -29,13 +29,13 @@ class Character_Agent(IBDI_Agent):
         pos_b = target_coordinate
         
         new_position = move_to_agent(
-            h, 
-            l, 
-            pos_a[0],
-            pos_a[1],
-            pos_b[0], 
-            pos_b[1], 
-            self.beliefs['displacement']
+            h=h, 
+            l=l, 
+            ax=pos_a[0],
+            ay=pos_a[1],
+            bx=pos_b[0], 
+            by=pos_b[1], 
+            max_step=self.beliefs['displacement']
         )
         
         new_cell = next(iter(self.model.grid.all_cells.select(
@@ -58,7 +58,7 @@ class Character_Agent(IBDI_Agent):
                 (target_coordinate[0], target_coordinate[1]-1), h, l
             )
  
-    def attack_enemy(self, enemyId):
+    def attack_enemy(self):
         enemyAgent = self.beliefs['target']
 
         damage = self.beliefs['att'] - enemyAgent.beliefs['def']
