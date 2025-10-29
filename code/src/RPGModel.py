@@ -2,6 +2,7 @@ import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 from Agents.character_agent import Character_Agent 
 from Agents.enemy_agent import Enemy_Agent 
+from mocks.beliefs import beliefs1, beliefs2, beliefs3
 
 class RPGModel(mesa.Model):
     """
@@ -19,42 +20,13 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
         
-        beliefs1 = {
-            'name': 'Marllon',
-            'hp': 10,
-            'hpMax': 100,
-            'is_alive': True,
-            'def': 30,
-            'att': 60,
-            'classe': 'LADINO',
-            'iniciativa': 14,
-            'displacement':3,
-            'em_batalha': True,
-            'hp_agente_alvo': 40,
-            'num_healing': 2,
-            'target': None,
-        }
-        beliefs2 = {
-            'name': 'Lucas',
-            'hp': 1,
-            'hpMax': 2000,
-            'is_alive': True,
-            'def': 10,
-            'att': 100,
-            'classe': 'MAGO',
-            'iniciativa': 14,
-            'displacement': 1,
-            'em_batalha': False,
-            'hp_agente_alvo': 9,
-            'num_healing': 20,
-            'target': None,
-        }
+        
         
         Character_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=beliefs1
+            beliefs=beliefs3
         )
         Character_Agent.create_agents(
             model=self,

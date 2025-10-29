@@ -15,7 +15,7 @@ class Character_Agent(IBDI_Agent):
         ):
         super().__init__(model)
         self.cell = cell
-        
+        self.type = 'CHARACTER'
         self.plan_library = {
         'SURVIVE': SurvivePlanLogic()
         }         
@@ -23,6 +23,15 @@ class Character_Agent(IBDI_Agent):
         self.beliefs = beliefs
         self.desires = ['SURVIVE']
         self.intention = None
+
+    def get_friend(self):
+        vizinhos = self.cell.get_neighborhood(
+            self.beliefs['displacement'])
+        
+        cell_agente_amigo = vizinhos.select(
+            lambda cell: not cell.is_empty and next(iter(cell.agents)).type == 'CHARACTER').cells
+    
+        return cell_agente_amigo
 
     def move_to_target(self, target_coordinate, displacement):
         h = self.model.grid.height
@@ -81,17 +90,29 @@ class Character_Agent(IBDI_Agent):
         match self.intention:
             case 'CURAR':
                 self.heal()
+
             case 'ATACAR INIMIGO':
                 self.attack_enemy()
+
             case 'APROXIMAR-SE':
                 print(f'POSIÇÃO: {self.cell.coordinate}')
                 self.move_to_target(
                     self.beliefs['target'].cell.coordinate,
                     self.beliefs['displacement'])
                 print(f'POSIÇÃO NOVA: {self.cell.coordinate}')
-                
+
             case 'FUGIR':
                 self.escape()
+
+            case 'APROXIMAR-SE DE AMIGO':
+                pass
+
+            case 'OBTER CURA':
+                pass
+
+            case 'ESPERAR':
+                pass
+
             case _:
                 pass
 
