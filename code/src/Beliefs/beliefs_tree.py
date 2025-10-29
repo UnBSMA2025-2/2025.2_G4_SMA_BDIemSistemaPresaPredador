@@ -28,7 +28,7 @@ class DecisionTree:
     def __init__(self, root):
         self.root = root  # A raiz deve ser um DecisionNode
 
-    def decide(self, context):
+    def decide(self, agent):
         """
         Toma uma decisão com base em um 'contexto' (estado atual).
         'context' é um dicionário ou objeto com os dados para as condições.
@@ -38,7 +38,7 @@ class DecisionTree:
         # Navega na árvore enquanto formos um nó de decisão
         while isinstance(current_node, DecisionNode):
             # A função da condição é chamada com o contexto
-            if current_node.condition_func(context):
+            if current_node.condition_func(agent):
                 current_node = current_node.yes_node
             else:
                 current_node = current_node.no_node

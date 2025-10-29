@@ -15,29 +15,27 @@ class SurvivePlanLogic:
         # 1. Funções de Condição (Consultas às Crenças)
         #    Estas funções leem o dicionário 'context' (crenças)
         
-        def cond_in_battle(context):
+        def cond_in_battle(agent):
             """Condição 1: em_batalha == true ?"""
-            return context['em_batalha']
+            return agent.beliefs['em_batalha']
         
-        def cond_target_low_hp(context):
+        def cond_target_low_hp(agent):
             """Condição 1.1: agente_alvo.hp < 10% ?"""
-            # NOTA: O 'agente_alvo' deve ser um objeto com um atributo 'hp'
-            # Assumindo que '10%' significa '< 10' pontos de HP.
-            if context['target'].beliefs['hp'] is None:
+            if agent.beliefs['target'] is None:
                 return False # Não pode ter HP baixo se não há alvo
-            return context['target'].beliefs['hp'] < 10
+            return agent.beliefs['target'].beliefs['hp'] < agent.beliefs['target'].beliefs['hpMax']*(0.1)
         
-        def cond_have_healing(context):
-            return context['num_healing'] > 0
+        def cond_have_healing(agent):
+            return agent.beliefs['num_healing'] > 0
         
-        def cond_distance(context):
+        def cond_distance(agent):
             distance = get_distance(
-                x1=context.cell.coordinate[0],
-                y1=context.cell.coordinate[1],
-                x2=context['target'].cell.coordinate[0],
-                y2=context['target'].cell.coordinate[1],
+                x1=agent.cell.coordinate[0],
+                y1=agent.cell.coordinate[1],
+                x2=agent.beliefs['target'].cell.coordinate[0],
+                y2=agent.beliefs['target'].cell.coordinate[1],
                 )
-            # Assumindo que a crença 'distancia_alvo' existe
+
             if distance is None:
                 return False # Se não sei a distância, não posso atacar
             return distance == 1
@@ -65,45 +63,43 @@ class SurvivePlanLogic:
         
         # --- PASSO B: Construir os RAMOS (de baixo para cima) ---
         
-        # Ramo 1.1.2: O que fazer se (em_batalha=S) e (alvo_hp_baixo=N)
+        # O que fazer se (em_batalha=S) e (alvo_hp_baixo=N)
         ramo_1_1_2 = DecisionNode(
             condition_func=cond_have_healing,
-            yes_node=acao_curar,   # C1.1.2.1
-            no_node=acao_fugir     # C1.1.2.2
+            yes_node=acao_curar,   
+            no_node=acao_fugir     
         )
 
-        # Ramo 1.2: O que fazer se (em_batalha=N)
         # (Corrigindo a duplicata C1.2 e C1.2.1 do seu rascunho)
         ramo_1_2 = DecisionNode(
             condition_func=cond_have_healing,
-            yes_node=acao_curar,   # C1.2.1.1
-            no_node=acao_fugir     # C1.2.1.2
+            yes_node=acao_curar,  
+            no_node=acao_fugir     
         )
 
         # O que fazer se (em_batalha=S) e (alvo_hp_baixo=S)
         ramo_checar_distancia = DecisionNode(
             condition_func=cond_distance,
-            yes_node=acao_atacar,        # Distância == 1
-            no_node=acao_aproximar       # Distância != 1
+            yes_node=acao_atacar,        
+            no_node=acao_aproximar       
         )
         
-        # Ramo 1.1: (Atualizado)
         # O que fazer se (em_batalha=S)
         ramo_1_1 = DecisionNode(
             condition_func=cond_target_low_hp,
-            yes_node=ramo_checar_distancia, # <-- MUDANÇA APLICADA
+            yes_node=ramo_checar_distancia, 
             no_node=ramo_1_1_2
         )
         
         # --- PASSO C: Construir a RAIZ ---
         raiz = DecisionNode(
             condition_func=cond_in_battle,
-            yes_node=ramo_1_1,      # Caminho C1.1
-            no_node=ramo_1_2        # Caminho C1.2
+            yes_node=ramo_1_1,     
+            no_node=ramo_1_2        
         )
         
         return raiz
 
-    def get_intention(self, context):
+    def get_intention(self, agent):
         """Interface pública para o agente BDI."""
-        return self.decision_tree.decide(context)
+        return self.decision_tree.decide(agent)

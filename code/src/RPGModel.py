@@ -36,17 +36,17 @@ class RPGModel(mesa.Model):
         }
         beliefs2 = {
             'name': 'Lucas',
-            'hp': 40,
-            'hpMax': 50,
+            'hp': 1,
+            'hpMax': 2000,
             'is_alive': True,
             'def': 10,
             'att': 100,
             'classe': 'MAGO',
             'iniciativa': 14,
             'displacement': 3,
-            'em_batalha': True,
+            'em_batalha': False,
             'hp_agente_alvo': 9,
-            'num_healing': 2,
+            'num_healing': 20,
             'target': None,
         }
         

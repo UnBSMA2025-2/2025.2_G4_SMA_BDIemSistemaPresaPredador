@@ -59,9 +59,7 @@ class Character_Agent(IBDI_Agent):
             )
  
     def attack_enemy(self, enemyId):
-        enemyAgent = next(iter(self.model.agents.select(
-            lambda agent: agent.unique_id == enemyId
-        )))
+        enemyAgent = self.beliefs['target']
 
         damage = self.beliefs['att'] - enemyAgent.beliefs['def']
         newHpEnemy = enemyAgent.beliefs['hp'] - max(0, damage)
@@ -87,7 +85,7 @@ class Character_Agent(IBDI_Agent):
         pass
 
     def deliberate(self):
-        self.intention = self.plan_library[self.desires[0]].get_intention(self.beliefs)
+        self.intention = self.plan_library[self.desires[0]].get_intention(self)
 
     def execute_plan(self):
         match self.intention:
@@ -97,7 +95,7 @@ class Character_Agent(IBDI_Agent):
                 self.attack_enemy(1)
             case 'APROXIMAR-SE':
                 self.move_to_target(
-                    target_coordinate=self.beliefs['pos_target'],
+                    target_coordinate=self.beliefs['target'].cell.coordinate,
                     h=self.model.grid.width,
                     l=self.model.grid.height,
                     )
@@ -111,6 +109,5 @@ class Character_Agent(IBDI_Agent):
         self.update_beliefs()
         self.deliberate()
         self.execute_plan()
-        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')
-        print(f'POSIÇÃO [{self.unique_id}]: {self.cell.coordinate}')
-        if self.beliefs['target']: print(f'ALVO [{self.unique_id}]: {self.beliefs['target'].beliefs['name']}')
+        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
+        print(f'AGENTE [{self.unique_id}]: {self.beliefs}')
