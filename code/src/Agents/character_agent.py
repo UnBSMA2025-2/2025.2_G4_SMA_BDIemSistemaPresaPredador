@@ -46,25 +46,6 @@ class Character_Agent(IBDI_Agent):
         
         if new_cell.is_empty:
             self.cell = new_cell
-            return
-        else:
-            vizinhos = new_cell.get_neighborhood(
-                self.beliefs['displacement']).cells
-            for cell in vizinhos:
-                return self.move_to_target(cell.coordinate, 1)
-            
-            # if target_coordinate[0] == 0: return self.move_to_target(
-            #     (target_coordinate[0]+1, target_coordinate[1]), h, l
-            # )
-            # elif target_coordinate[0] == h: return self.move_to_target(
-            #     (target_coordinate[0]-1, target_coordinate[1]), h, l
-            # )
-            # elif target_coordinate[1] == 0: return self.move_to_target(
-            #     (target_coordinate[0], target_coordinate[1]+1), h, l
-            # )
-            # elif target_coordinate[1] == l: return self.move_to_target(
-            #     (target_coordinate[0], target_coordinate[1]-1), h, l
-            # )
 
     def attack_enemy(self):
         enemyAgent = self.beliefs['target']
@@ -87,7 +68,7 @@ class Character_Agent(IBDI_Agent):
     def escape(self):
         vizinho = self.cell.neighborhood.select_random_cell()
         
-        self.move_to_target(vizinho.coordinate)
+        self.move_to_target(vizinho.coordinate, 1)
 
     # -------- BDI -------- #
     def update_beliefs(self):
