@@ -43,14 +43,14 @@ class SurvivePlanLogic:
         def cond_friend_free(agent):
             if len(agent.get_friend()) == 0:
                 return False
-            return not agent.get_friend().beliefs['em_batalha']
+            return not agent.get_friend()[0].agents[0].beliefs['em_batalha']
         
         def cond_friend_distance(agent):
             distance = get_distance(
                 x1=agent.cell.coordinate[0],
                 y1=agent.cell.coordinate[1],
-                x2=agent.get_friend().cell.coordinate[0],
-                y2=agent.get_friend().cell.coordinate[1],
+                x2=agent.get_friend()[0].agents[0].cell.coordinate[0],
+                y2=agent.get_friend()[0].agents[0].cell.coordinate[1],
                 )
 
             if distance is None:

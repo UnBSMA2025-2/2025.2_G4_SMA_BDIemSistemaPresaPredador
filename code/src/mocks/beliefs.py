@@ -32,7 +32,7 @@ beliefs2 = {
     'target': None,
 }
 
-# caso onde o agente com pouca vida está fora de combate e em espera
+# caso onde o agente com pouca vida está fora de combate e espera ou tem um amigo ao lado
 beliefs3 = {
     'name': 'Lucas',
     'hp': 1,
@@ -42,7 +42,7 @@ beliefs3 = {
     'att': 100,
     'classe': 'MAGO',
     'iniciativa': 14,
-    'displacement': 1,
+    'displacement': 10,
     'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 0,

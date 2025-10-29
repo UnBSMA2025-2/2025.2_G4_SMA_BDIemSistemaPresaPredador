@@ -20,17 +20,15 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
         
-        
-        
         Character_Agent.create_agents(
             model=self,
-            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
+            cell=self.grid.all_cells.cells[0],
             n=self.num_agents,
             beliefs=beliefs3
         )
         Character_Agent.create_agents(
             model=self,
-            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
+            cell=self.grid.all_cells.cells[4],
             n=self.num_agents,
             beliefs=beliefs2
         )
