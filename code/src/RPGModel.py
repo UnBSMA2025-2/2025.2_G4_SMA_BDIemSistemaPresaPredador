@@ -28,7 +28,7 @@ class RPGModel(mesa.Model):
             'att': 60,
             'classe': 'LADINO',
             'iniciativa': 14,
-            'displacement': 1,
+            'displacement':3,
             'em_batalha': True,
             'hp_agente_alvo': 40,
             'num_healing': 2,

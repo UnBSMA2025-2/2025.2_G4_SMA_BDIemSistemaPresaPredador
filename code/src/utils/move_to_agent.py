@@ -2,83 +2,113 @@ import math
 
 def move_to_agent(h, l, ax, ay, bx, by, max_step):
     """
-    Calcula a nova posição de A, movendo-se em direção a B no máximo 'max_step' 
-    células, com o objetivo de ficar adjacente a B.
+    Calcula a nova posição de A, movendo-se em direção a B, respeitando
+    um número máximo de passos (max_step) e as fronteiras do tabuleiro.
 
-    A distância é medida usando a métrica de Chebyshev (L-infinito), 
-    onde a distância entre (x1, y1) e (x2, y2) é max(|x1-x2|, |y1-y2|).
-    Isso significa que um movimento diagonal conta como 1 passo.
+    A distância usada é a Distância de Chebyshev (movimento de "rei" no
+    xadrez), onde mover-se na diagonal custa 1 passo.
 
-    Argumentos:
-        h (int): Altura do tabuleiro (número de linhas).
-        l (int): Largura do tabuleiro (número de colunas).
-        ax (int): Posição x atual de A.
-        ay (int): Posição y atual de A.
-        bx (int): Posição x de B.
-        by (int): Posição y de B.
-        max_step (int): O número máximo de células (passos) que A pode se mover.
+    A posição final de A (A') tentará estar a uma distância de 1 de B,
+    e A' não pode ser igual a B.
 
-    Retorno:
-        tuple[int, int]: A nova posição (x, y) de A.
+    Args:
+        h: Altura (height) do tabuleiro (número de linhas, indexadas de 0 a h-1).
+        l: Largura (width) do tabuleiro (número de colunas, indexadas de 0 a l-1).
+        ax: Posição X inicial de A.
+        ay: Posição Y inicial de A.
+        bx: Posição X de B.
+        by: Posição Y de B.
+        max_step: O número máximo de "células" (passos) que A pode se mover.
+
+    Returns:
+        Uma tupla (int, int) representando a nova posição (x, y) de A.
     """
 
-    # 1. Calcular o vetor e a distância de A para B
-    dx = bx - ax
-    dy = by - ay
+    # --- 1. Calcular o vetor e a distância de A para B ---
+    # A distância de Chebyshev (L-infinito) é o máximo das
+    # diferenças absolutas das coordenadas.
+    vx = bx - ax
+    vy = by - ay
+    distancia = max(abs(vx), abs(vy))
 
-    # Distância de Chebyshev (L-infinito)
-    # Esta é a quantidade de "passos" (incluindo diagonais) de A para B.
-    dist_para_b = max(abs(dx), abs(dy))
+    # --- 2. Lidar com casos base (Constraints 1 e 2) ---
 
-    # 2. Verificar Considerações 1 e 2 (se já adjacente ou no mesmo lugar)
-    # Se a distância for 1, A já está adjacente.
-    # Se a distância for 0, A está em B (o que a regra 1 proíbe, mas
-    # em ambos os casos, A não deve se mover para mais perto).
-    if dist_para_b <= 1:
+    # Caso 1: A e B já estão na mesma posição (distancia == 0).
+    # Constraint 1 diz que não podem ocupar a msm posição (na nova rodada).
+    # A *deve* se mover para uma posição adjacente (distância 1).
+    if distancia == 0:
+        if max_step == 0:
+            # Impossível mover, falha em satisfazer a constraint 1.
+            # Retorna a posição atual como única opção.
+            return (ax, ay)
+        
+        # Tenta mover 1 passo para (ax+1, ay) e valida
+        # contra as bordas do tabuleiro.
+        # max(0, ...) garante que não seja < 0
+        # min(l-1, ...) garante que não seja >= l
+        
+        # Tenta mover para a direita
+        new_ax = max(0, min(l - 1, ax + 1))
+        new_ay = max(0, min(h - 1, ay))
+        if (new_ax, new_ay) != (ax, ay):
+            return (new_ax, new_ay)
+            
+        # Tenta mover para a esquerda
+        new_ax = max(0, min(l - 1, ax - 1))
+        new_ay = max(0, min(h - 1, ay))
+        if (new_ax, new_ay) != (ax, ay):
+            return (new_ax, new_ay)
+
+        # Tenta mover para baixo
+        new_ax = max(0, min(l - 1, ax))
+        new_ay = max(0, min(h - 1, ay + 1))
+        if (new_ax, new_ay) != (ax, ay):
+            return (new_ax, new_ay)
+            
+        # Tenta mover para cima (única opção restante)
+        new_ax = max(0, min(l - 1, ax))
+        new_ay = max(0, min(h - 1, ay - 1))
+        return (new_ax, new_ay) # Retorna (ax, ay) se for um tabuleiro 1x1
+
+    # Caso 2: A já está adjacente a B (distancia == 1).
+    # Este é o objetivo (Constraint 2). A não precisa se mover.
+    if distancia == 1:
         return (ax, ay)
 
-    # 3. Determinar quantos passos A deve realmente mover
-    # O objetivo é alcançar uma distância de 1 (adjacente).
-    # Portanto, A quer se mover 'dist_para_b - 1' passos.
-    # A só pode se mover no máximo 'max_step' passos.
-    passos_a_mover = min(max_step, dist_para_b - 1)
+    # --- 3. Calcular movimento (distancia > 1) ---
 
-    # 4. Calcular o vetor de movimento real
-    # Nós "prendemos" (clamp) o vetor total (dx, dy) ao tamanho de 'passos_a_mover'.
-    # Isso move A 'passos_a_mover' na direção de B, lidando corretamente
-    # com movimentos diagonais e retos.
-    #
-    # Ex: A=(0,0), B=(10, 5), max_step=3
-    #     dist_para_b = 10
-    #     passos_a_mover = min(3, 10 - 1) = 3
-    #     move_x = max(-3, min(3, 10)) = 3
-    #     move_y = max(-3, min(3, 5)) = 3
-    #     Nova Posição: (0+3, 0+3) = (3, 3)
-    #
-    # Ex: A=(0,0), B=(10, 5), max_step=20
-    #     dist_para_b = 10
-    #     passos_a_mover = min(20, 10 - 1) = 9
-    #     move_x = max(-9, min(9, 10)) = 9
-    #     move_y = max(-9, min(9, 5)) = 5
-    #     Nova Posição: (0+9, 0+5) = (9, 5) -> Esta é adjacente a B!
+    # A quer se mover para uma distância de 1, então ela
+    # "quer" dar `distancia - 1` passos.
+    passos_desejados = distancia - 1
 
-    move_x = max(-passos_a_mover, min(passos_a_mover, dx))
-    move_y = max(-passos_a_mover, min(passos_a_mover, dy))
+    # A só pode dar o mínimo entre o que quer e o que pode (max_step).
+    passos_a_dar = min(max_step, passos_desejados)
 
-    # 5. Calcular a nova posição (antes de verificar os limites)
-    new_ax = ax + move_x
-    new_ay = ay + move_y
+    # Se max_step for 0, passos_a_dar será 0.
+    if passos_a_dar == 0:
+        return (ax, ay)
 
-    # 6. Consideração 3: Garantir que a nova posição esteja dentro do tabuleiro
-    # As coordenadas são baseadas em índice 0, então os limites são:
-    # x: [0, l-1]
-    # y: [0, h-1]
-    final_ax = max(0, min(l - 1, new_ax))
-    final_ay = max(0, min(h - 1, new_ay))
-
-    # Esta lógica garante que, mesmo que o tabuleiro seja limitado, a nova
-    # posição de A não será a mesma de B, pois o caso 'dist_para_b <= 1'
-    # foi tratado primeiro.
+    # --- 4. Calcular a nova posição (sem fronteiras) ---
+    # Usamos uma proporção para mover A ao longo do "vetor" (vx, vy)
+    # no espaço de Chebyshev. O `round` lida com o movimento
+    # diagonal (ex: mover 3 passos para (10, 5) resulta em (3, 2)).
     
+    # É crucial usar divisão flutuante aqui.
+    proporcao_movimento = passos_a_dar / distancia
+    
+    # round() nativo do Python arredonda para o inteiro mais próximo.
+    # (ex: round(1.5) == 2, round(1.49) == 1)
+    # Convertemos para int para segurança.
+    new_ax = ax + round(vx * proporcao_movimento)
+    new_ay = ay + round(vy * proporcao_movimento)
+
+    # --- 5. Aplicar fronteiras (Constraint 3) ---
+    # Garante que a nova posição esteja dentro do tabuleiro h x l.
+    
+    final_ax = max(0, min(l - 1, int(new_ax)))
+    final_ay = max(0, min(h - 1, int(new_ay)))
+
+    # A lógica garante que nunca pousaremos em B, pois
+    # `passos_a_dar` é no máximo `distancia - 1`.
     return (final_ax, final_ay)
 

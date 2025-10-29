@@ -24,7 +24,9 @@ class Character_Agent(IBDI_Agent):
         self.desires = ['SURVIVE']
         self.intention = None
 
-    def move_to_target(self, target_coordinate=(0,0), h=10, l=10):
+    def move_to_target(self, target_coordinate, displacement):
+        h = self.model.grid.height
+        l = self.model.grid.width
         pos_a = self.cell.coordinate
         pos_b = target_coordinate
         
@@ -35,7 +37,7 @@ class Character_Agent(IBDI_Agent):
             ay=pos_a[1],
             bx=pos_b[0], 
             by=pos_b[1], 
-            max_step=self.beliefs['displacement']
+            max_step=displacement
         )
         
         new_cell = next(iter(self.model.grid.all_cells.select(
@@ -44,20 +46,26 @@ class Character_Agent(IBDI_Agent):
         
         if new_cell.is_empty:
             self.cell = new_cell
+            return
         else:
-            if target_coordinate[0] == 0: return self.move_to_target(
-                (target_coordinate[0]+1, target_coordinate[1]), h, l
-            )
-            elif target_coordinate[0] == h: return self.move_to_target(
-                (target_coordinate[0]-1, target_coordinate[1]), h, l
-            )
-            elif target_coordinate[1] == 0: return self.move_to_target(
-                (target_coordinate[0], target_coordinate[1]+1), h, l
-            )
-            elif target_coordinate[1] == l: return self.move_to_target(
-                (target_coordinate[0], target_coordinate[1]-1), h, l
-            )
- 
+            vizinhos = new_cell.get_neighborhood(
+                self.beliefs['displacement']).cells
+            for cell in vizinhos:
+                return self.move_to_target(cell.coordinate, 1)
+            
+            # if target_coordinate[0] == 0: return self.move_to_target(
+            #     (target_coordinate[0]+1, target_coordinate[1]), h, l
+            # )
+            # elif target_coordinate[0] == h: return self.move_to_target(
+            #     (target_coordinate[0]-1, target_coordinate[1]), h, l
+            # )
+            # elif target_coordinate[1] == 0: return self.move_to_target(
+            #     (target_coordinate[0], target_coordinate[1]+1), h, l
+            # )
+            # elif target_coordinate[1] == l: return self.move_to_target(
+            #     (target_coordinate[0], target_coordinate[1]-1), h, l
+            # )
+
     def attack_enemy(self):
         enemyAgent = self.beliefs['target']
 
@@ -69,6 +77,7 @@ class Character_Agent(IBDI_Agent):
             enemyAgent.beliefs['hp'] = 0
         else:
             enemyAgent.beliefs['hp'] = newHpEnemy
+        print(f'ATAQUE REALIZADO [{self.unique_id} atacou {self.beliefs['target'].unique_id}]\n----> DANO CAUSADO: {damage}')
 
     def heal(self):
         if self.beliefs['num_healing'] > 0:
@@ -92,13 +101,14 @@ class Character_Agent(IBDI_Agent):
             case 'CURAR':
                 self.heal()
             case 'ATACAR INIMIGO':
-                self.attack_enemy(1)
+                self.attack_enemy()
             case 'APROXIMAR-SE':
+                print(f'POSIÇÃO: {self.cell.coordinate}')
                 self.move_to_target(
-                    target_coordinate=self.beliefs['target'].cell.coordinate,
-                    h=self.model.grid.width,
-                    l=self.model.grid.height,
-                    )
+                    self.beliefs['target'].cell.coordinate,
+                    self.beliefs['displacement'])
+                print(f'POSIÇÃO NOVA: {self.cell.coordinate}')
+                
             case 'FUGIR':
                 self.escape()
             case _:
