@@ -26,7 +26,7 @@ class SurvivePlanLogic:
             return agent.beliefs['target'].beliefs['hp'] < agent.beliefs['target'].beliefs['hpMax']*(0.1)
         
         def cond_have_healing(agent):
-            return agent.beliefs['num_healing'] > 0
+            return agent.beliefs['num_healing'] > 1
         
         def cond_distance(agent):
             distance = get_distance(

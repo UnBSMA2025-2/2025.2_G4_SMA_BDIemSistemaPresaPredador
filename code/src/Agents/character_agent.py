@@ -2,6 +2,8 @@ from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
 import random
+from communication import MessageDict
+import uuid
 
 class Character_Agent(IBDI_Agent):
     """
@@ -18,8 +20,8 @@ class Character_Agent(IBDI_Agent):
         self.type = 'CHARACTER'
         self.plan_library = {
         'SURVIVE': SurvivePlanLogic()
-        }         
-        
+        }        
+        self.received_messages = []
         self.beliefs = beliefs
         self.desires = ['SURVIVE']
         self.intention = None
@@ -67,19 +69,27 @@ class Character_Agent(IBDI_Agent):
             enemyAgent.beliefs['hp'] = 0
         else:
             enemyAgent.beliefs['hp'] = newHpEnemy
-        print(f'ATAQUE REALIZADO [{self.unique_id} atacou {self.beliefs['target'].unique_id}]\n----> DANO CAUSADO: {damage}')
 
     def heal(self):
         if self.beliefs['num_healing'] > 0:
             self.beliefs['hp'] += random.randint(1, 4)
             self.beliefs['num_healing'] -= 1
 
-    def get_heal(self):      
+    def request_heal(self):
+        '''
+        Método solicitar uma cura via mensagem
+        '''     
         for cell in self.get_friends():
             if not cell.agents[0].beliefs['em_batalha'] and cell.agents[0].beliefs['num_healing'] > 1:
-                self.beliefs['num_healing'] += 1
-                cell.agents[0].beliefs['num_healing'] -= 1
-                print('Pote de cura obtido!')
+                message = MessageDict(
+                    performative='SEND_HEALING',
+                    sender=self.unique_id,
+                    receiver=cell.agents[0].unique_id,
+                    content={},
+                    conversation_id=uuid.uuid4()
+                )
+                self.model.send_message(message)
+                print(f'PEDIDO DE CURA ENVIADO')
                 return
 
     def escape(self):
@@ -87,8 +97,32 @@ class Character_Agent(IBDI_Agent):
         
         self.move_to_target(vizinho.coordinate, 1)
 
+    def get_heal(self, message):
+        '''
+        Método para receber uma cura via mensagem
+        '''
+        self.beliefs['num_healing'] += message['content']['num_healing']
+        print(f'CURA RECEBIDA')
+        return
+
+    def send_heal(self, message):
+        """
+        Método para enviar uma cura por mensagem
+        """
+        response = MessageDict(
+            performative='GET_HEALING',
+            sender=self.unique_id,
+            receiver=message['sender'],
+            content={'num_healing': 1},
+            conversation_id=message['conversation_id']
+        )
+        self.model.send_message(response)
+        self.beliefs['num_healing'] -= 1
+        print(f'CURA ENVIADA')
+        return
+        
     # -------- BDI -------- #
-    def update_beliefs(self):
+    def update_desires(self):
         pass
 
     def deliberate(self):
@@ -105,11 +139,9 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'APROXIMAR-SE':
-                print(f'POSIÇÃO: {self.cell.coordinate}')
                 self.move_to_target(
                     self.beliefs['target'].cell.coordinate,
                     self.beliefs['displacement'])
-                print(f'POSIÇÃO NOVA: {self.cell.coordinate}')
                 return
 
             case 'FUGIR':
@@ -126,7 +158,7 @@ class Character_Agent(IBDI_Agent):
                         return
 
             case 'OBTER CURA':
-                self.get_heal()
+                self.request_heal()
                 return
 
             case 'ESPERAR':
@@ -135,10 +167,32 @@ class Character_Agent(IBDI_Agent):
             case _:
                 pass
 
+    def process_message(self):
+        for message in self.received_messages:
+            match message['performative']:
+                case 'SEND_HEALING': # Envia uma acura
+                    self.send_heal(message)
+                    pass
+                case 'GET_HEALING': # Recebe a acura
+                    self.get_heal(message)
+                    pass
+                case 'ATTACK_TARGET': # Envia um ataque
+                    pass
+                case _:
+                    pass
+            self.received_messages.remove(message)
+
+    def get_messages(self):
+        self.received_messages = self.model.get_messages(self.unique_id)
+        pass
+
     def step(self):
+        print("-"*40)
         print(f"Executando step do personagem...")
-        self.update_beliefs()
+        self.get_messages()
+        self.process_message()
+        self.update_desires()
         self.deliberate()
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        print(f'AGENTE [{self.unique_id}]: {self.beliefs}')
+        print("-"*40)

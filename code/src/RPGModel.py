@@ -1,8 +1,11 @@
 import mesa
+from collections import defaultdict
 from mesa.discrete_space import OrthogonalMooreGrid
 from Agents.character_agent import Character_Agent 
 from Agents.enemy_agent import Enemy_Agent 
 from mocks.beliefs import beliefs1, beliefs2, beliefs3
+from communication import MessageDict
+
 
 class RPGModel(mesa.Model):
     """
@@ -49,42 +52,33 @@ class RPGModel(mesa.Model):
         agent1.beliefs['target'] = agent2
         agent2.beliefs['target'] = agent1
 
-    def send_message(self, sender_id, recipient_id, content):
+    def send_message(self, message:MessageDict):
         """
         Método público para qualquer agente enviar uma mensagem.
         O modelo armazena a mensagem na caixa do destinatário.
         """
+        print(self.message_box)
         # Se o destinatário ainda não tem uma lista de mensagens, cria uma
-        if recipient_id not in self.message_box:
-            self.message_box[recipient_id] = []
-            
-        message = {
-            'sender': sender_id,
-            'content': content
-        }
+        if message['receiver'] not in self.message_box:
+            self.message_box[message['receiver']] = []
         
-        self.message_box[recipient_id].append(message)
-        print(f"[Modelo (Correio)]: Mensagem de {sender_id} para {recipient_id} registrada.")
+        self.message_box[message['receiver']].append(message)
 
     def get_messages(self, recipient_id):
         """
-        Método para um agente "puxar" (pull) suas mensagens.
+        Método para um agente resgatar suas mensagens.
         Retorna a lista de mensagens e limpa a caixa de entrada 
         daquele agente.
         """
         if recipient_id in self.message_box:
-            # Pega as mensagens (.pop() remove a chave do dicionário)
             messages = self.message_box.pop(recipient_id) 
-            print(f"[Modelo (Correio)]: Agente {recipient_id} coletou {len(messages)} mensagem(ns).")
+            print(messages)
             return messages
         
         # Nenhuma mensagem para este agente
         return []
 
     def step(self):
-        """
-        Define o que acontece em um "passo" (tick) da simulação.
-        """
         print("\n" + "="*40)
         print(f"--- Início do Passo {self.steps} da Simulação ---")
 
