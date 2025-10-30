@@ -32,6 +32,12 @@ class RPGModel(mesa.Model):
             n=self.num_agents,
             beliefs=beliefs2
         )
+        Character_Agent.create_agents(
+            model=self,
+            cell=self.grid.all_cells.cells[24],
+            n=self.num_agents,
+            beliefs=beliefs2
+        )
 
         agent1 = next(iter(self.agents.select(
             lambda agent: agent.unique_id == 1

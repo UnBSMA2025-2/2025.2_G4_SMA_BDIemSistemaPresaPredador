@@ -24,14 +24,14 @@ class Character_Agent(IBDI_Agent):
         self.desires = ['SURVIVE']
         self.intention = None
 
-    def get_friend(self):
+    def get_friends(self):
         vizinhos = self.cell.get_neighborhood(
             self.beliefs['displacement'])
         
-        cell_agente_amigo = vizinhos.select(
+        cell_agentes_amigos = vizinhos.select(
             lambda cell: not cell.is_empty and next(iter(cell.agents)).type == 'CHARACTER').cells
     
-        return cell_agente_amigo
+        return cell_agentes_amigos
 
     def move_to_target(self, target_coordinate, displacement):
         h = self.model.grid.height
@@ -74,6 +74,14 @@ class Character_Agent(IBDI_Agent):
             self.beliefs['hp'] += random.randint(1, 4)
             self.beliefs['num_healing'] -= 1
 
+    def get_heal(self):      
+        for cell in self.get_friends():
+            if not cell.agents[0].beliefs['em_batalha'] and cell.agents[0].beliefs['num_healing'] > 1:
+                self.beliefs['num_healing'] += 1
+                cell.agents[0].beliefs['num_healing'] -= 1
+                print('Pote de cura obtido!')
+                return
+
     def escape(self):
         vizinho = self.cell.neighborhood.select_random_cell()
         
@@ -90,9 +98,11 @@ class Character_Agent(IBDI_Agent):
         match self.intention:
             case 'CURAR':
                 self.heal()
+                return
 
             case 'ATACAR INIMIGO':
                 self.attack_enemy()
+                return
 
             case 'APROXIMAR-SE':
                 print(f'POSIÇÃO: {self.cell.coordinate}')
@@ -100,15 +110,24 @@ class Character_Agent(IBDI_Agent):
                     self.beliefs['target'].cell.coordinate,
                     self.beliefs['displacement'])
                 print(f'POSIÇÃO NOVA: {self.cell.coordinate}')
+                return
 
             case 'FUGIR':
                 self.escape()
+                return
 
             case 'APROXIMAR-SE DE AMIGO':
-                pass
+                for cell in self.get_friends():
+                    if not cell.agents[0].beliefs['em_batalha']:
+                        friend_pos = cell.agents[0].cell.coordinate
+                        self.move_to_target(
+                            friend_pos,
+                            self.beliefs['displacement'])
+                        return
 
             case 'OBTER CURA':
-                pass
+                self.get_heal()
+                return
 
             case 'ESPERAR':
                 pass

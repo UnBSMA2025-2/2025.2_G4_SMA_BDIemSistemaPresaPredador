@@ -48,3 +48,20 @@ beliefs3 = {
     'num_healing': 0,
     'target': None,
 }
+
+
+beliefs4 = {
+    'name': 'Lucas',
+    'hp': 1,
+    'hpMax': 2000,
+    'is_alive': True,
+    'def': 10,
+    'att': 100,
+    'classe': 'MAGO',
+    'iniciativa': 14,
+    'displacement': 1,
+    'em_batalha': True,
+    'hp_agente_alvo': 9,
+    'num_healing': 20,
+    'target': None,
+}
