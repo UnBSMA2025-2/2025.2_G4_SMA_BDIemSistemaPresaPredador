@@ -27,17 +27,11 @@ class RPGModel(mesa.Model):
             model=self,
             cell=self.grid.all_cells.cells[0],
             n=self.num_agents,
-            beliefs=beliefs3
+            beliefs=beliefs1
         )
         Character_Agent.create_agents(
             model=self,
             cell=self.grid.all_cells.cells[4],
-            n=self.num_agents,
-            beliefs=beliefs2
-        )
-        Character_Agent.create_agents(
-            model=self,
-            cell=self.grid.all_cells.cells[24],
             n=self.num_agents,
             beliefs=beliefs2
         )
@@ -52,31 +46,9 @@ class RPGModel(mesa.Model):
         agent1.beliefs['target'] = agent2
         agent2.beliefs['target'] = agent1
 
-    def send_message(self, message:MessageDict):
-        """
-        Método público para qualquer agente enviar uma mensagem.
-        O modelo armazena a mensagem na caixa do destinatário.
-        """
-        print(self.message_box)
-        # Se o destinatário ainda não tem uma lista de mensagens, cria uma
-        if message['receiver'] not in self.message_box:
-            self.message_box[message['receiver']] = []
-        
-        self.message_box[message['receiver']].append(message)
-
-    def get_messages(self, recipient_id):
-        """
-        Método para um agente resgatar suas mensagens.
-        Retorna a lista de mensagens e limpa a caixa de entrada 
-        daquele agente.
-        """
-        if recipient_id in self.message_box:
-            messages = self.message_box.pop(recipient_id) 
-            print(messages)
-            return messages
-        
-        # Nenhuma mensagem para este agente
-        return []
+    def get_agent_by_id(self, agent_id):
+        return (next(iter(self.agents.select(
+            lambda agent: agent.unique_id == agent_id))))
 
     def step(self):
         print("\n" + "="*40)
