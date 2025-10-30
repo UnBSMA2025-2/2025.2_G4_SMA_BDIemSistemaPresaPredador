@@ -5,7 +5,7 @@ from BDIPlanLogic.EnemyDesires import get_desire
 
 class Mob_Agent(IBDI_Agent):
     """
-    Um agente que representa um personagem inimigo com lógica BDI.
+    Um agente que representa um inimigo comum com lógica BDI.
     """
     def __init__(self, 
         model, 
@@ -68,12 +68,22 @@ class Mob_Agent(IBDI_Agent):
         pass
 
     def execute_plan(self):
-        match self.intention:
+            match self.intention:
             case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
                 self.set_attacked_target()
                 
             case _:
                 pass
+
+    def process_message(self):
+        for message in self.inbox:
+            match message['performative']:
+                case 'ATTACK_TARGET': # Resposta ao ataque do inimigo
+                    self.receive_attack(message)
+                
+                case _:
+                    pass
+            self.inbox.remove(message)
 
     def process_message(self):
         for message in self.inbox:
