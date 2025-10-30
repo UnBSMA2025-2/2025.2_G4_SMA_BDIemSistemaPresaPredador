@@ -1,5 +1,7 @@
 import random
 from Interfaces.IBDI_Agent import IBDI_Agent
+from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+from utils.move_to_agent import move_to_agent
 from communication import MessageDict
 
 class Enemy_Agent(IBDI_Agent):
@@ -18,7 +20,7 @@ class Enemy_Agent(IBDI_Agent):
         self.plan_library = {}        
         self.inbox = []
         self.beliefs = beliefs
-        self.desires = []
+        self.desires = ['']
         self.intention = None
 
     def receive_attack(self, message):
@@ -30,6 +32,7 @@ class Enemy_Agent(IBDI_Agent):
             self.beliefs['hp'] = 0
         else:
             self.beliefs['hp'] = newHp
+            self.beliefs['received_attack'] = message['sender']
 
         response = MessageDict(
             performative='ATTACK_RESPONSE',
@@ -46,24 +49,20 @@ class Enemy_Agent(IBDI_Agent):
         return
    
     def update_desires(self):
+        self.desires[0] = get_desire(self)
         pass
 
     def deliberate(self):
         self.intention = self.plan_library[self.desires[0]].get_intention(self)
+        pass
 
     def execute_plan(self):
-            pass
-
-    def process_message(self):
-        for message in self.inbox:
-            match message['performative']:
-                case 'ATTACK_TARGET': # Resposta ao ataque do inimigo
-                    self.receive_attack(message)
-                    return
+        match self.intention:
+            case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
+                self.set_attacked_target()
                 
-                case _:
-                    pass
-            self.inbox.remove(message)
+            case _:
+                pass
 
     def process_message(self):
         for message in self.inbox:
@@ -85,5 +84,5 @@ class Enemy_Agent(IBDI_Agent):
         self.deliberate()
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
-        print("-"*40)
+        print(f'VIDA [{self.unique_id}]: {self.beliefs['hp']}')        
+        print("-"*40)     
