@@ -1,4 +1,6 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
+from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+from utils.move_to_agent import move_to_agent
 from communication import MessageDict
 from BDIPlanLogic.RetaliateAttackPlanLogic import RetaliateAttackPlanLogic
 from BDIPlanLogic.EnemyDesires import get_desire
