@@ -1,9 +1,10 @@
+import random
 from Interfaces.IBDI_Agent import IBDI_Agent
 from communication import MessageDict
 
 class Enemy_Agent(IBDI_Agent):
     """
-    Um agente que representa um personagem inimigo com lógica BDI.
+    Um agente que representa um inimigo comum com lógica BDI.
     """
     def __init__(self, 
         model, 
@@ -48,10 +49,21 @@ class Enemy_Agent(IBDI_Agent):
         pass
 
     def deliberate(self):
-        pass
+        self.intention = self.plan_library[self.desires[0]].get_intention(self)
 
     def execute_plan(self):
-        pass
+            pass
+
+    def process_message(self):
+        for message in self.inbox:
+            match message['performative']:
+                case 'ATTACK_TARGET': # Resposta ao ataque do inimigo
+                    self.receive_attack(message)
+                    return
+                
+                case _:
+                    pass
+            self.inbox.remove(message)
 
     def process_message(self):
         for message in self.inbox:
