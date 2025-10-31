@@ -2,6 +2,7 @@ from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
 from BDIPlanLogic.BattlePlanLogic import BattlePlanLogic
+from Beliefs.ExplorationPlanLogic import ExplorationPlanLogic
 import random
 from communication import MessageDict
 import uuid
@@ -24,10 +25,11 @@ class Character_Agent(IBDI_Agent):
         self.plan_library = {
         'SURVIVE': SurvivePlanLogic(),
         'BATTLE': BattlePlanLogic(),
+        'EXPLORE': ExplorationPlanLogic(),
         }        
         self.inbox = []
         self.beliefs = beliefs
-        self.desires = ['']
+        self.desires = ['BATTLE', 'SURVIVE', 'EXPLORE']
         self.intention = None
 
     def get_friends(self):
