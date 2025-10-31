@@ -208,5 +208,5 @@ class Character_Agent(IBDI_Agent):
         self.deliberate()
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
+        # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
         print("-"*40)
