@@ -1,6 +1,7 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+from Beliefs.ExplorationPlanLogic import ExplorationPlanLogic
 import random
 
 class Character_Agent(IBDI_Agent):
@@ -17,11 +18,12 @@ class Character_Agent(IBDI_Agent):
         self.cell = cell
         self.type = 'CHARACTER'
         self.plan_library = {
-        'SURVIVE': SurvivePlanLogic()
+        'SURVIVE': SurvivePlanLogic(),
+        'EXPLORE': ExplorationPlanLogic()
         }         
         
         self.beliefs = beliefs
-        self.desires = ['SURVIVE']
+        self.desires = ['SURVIVE', 'EXPLORE']
         self.intention = None
 
     def get_friends(self):
