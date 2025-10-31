@@ -14,6 +14,7 @@ class ExplorationPlanLogic:
         # 1. Funções de Condição (Consultas às Crenças)
         #    Estas funções leem o dicionário 'context' (crenças)
         
+<<<<<<< HEAD:code/src/BDIPlanLogic/ExplorationPlanLogic.py
         def cond_agent_half_hp_and_not_in_battle(agent):
             """Condição Raiz: agent.hp > 50% and not em_batalha ?"""
             print(agent.beliefs['hp'] > (agent.beliefs['hpMax'] * 0.5) and not agent.beliefs['em_batalha'])
@@ -53,10 +54,38 @@ class ExplorationPlanLogic:
                     for a in cell.agents:
                         # TO-DO : ajustar tipo de inimigo conforme modelo
                         if a.type == 'ANIMAL':
+=======
+        def cond_agent_half_hp(agent):
+            """Condição 1: agente.hp < 50% ?"""
+            return agent.beliefs['hp'] < agent.beliefs['hpMax']*(0.5)
+        
+        def cond_heal_in_range(agent):
+            """Condição 1.1: há cura por perto? - verifica células próximas"""
+            healing_cells = agent.model.grid.get_cells_in_range(
+                center=agent.cell.coordinate,
+                range_distance=agent.beliefs['displacement']
+            )
+            for cell in healing_cells:
+                if cell.beliefs['healing_spot']:
+                    return True
+            return False
+        
+        def cond_enemy_in_range(agent):
+            """Condição 1.2: há um inimigo por perto? - verifica células próximas"""
+            enemy_cells = agent.model.grid.get_cells_in_range(
+                center=agent.cell.coordinate,
+                range_distance=agent.beliefs['displacement']
+            )
+            for cell in enemy_cells:
+                if not cell.is_empty: # se há algo na célula
+                    for a in cell.agents:
+                        if a.type == 'COMMON_ENEMY': # se for um inimigo comum
+>>>>>>> a15efbb (feat: add explorationPlanLogic for character_agent BDI):code/src/Beliefs/ExplorationPlanLogic.py
                             return True
             return False
 
         # 2. Construir a árvore e armazenar o "motor"
+<<<<<<< HEAD:code/src/BDIPlanLogic/ExplorationPlanLogic.py
         raiz = self._build_tree(
             cond_agent_half_hp_and_not_in_battle,
             cond_healing_item_nearby,
@@ -108,6 +137,41 @@ class ExplorationPlanLogic:
         )
 
         return raiz
+=======
+        raiz = self.build_tree(
+            cond_agent_half_hp,
+            cond_heal_in_range,
+            cond_enemy_in_range,
+        )
+        self.decision_tree = DecisionTree(raiz)
+
+        def build_tree(self, cond_agent_half_hp, cond_heal_in_range, cond_enemy_in_range):
+            # Nó folha: Ações/Intenções
+            acao_adquirir_cura = IntentionNode('ADQUIRIR CURA')
+            acao_explorar = IntentionNode('EXPLORAR')
+            acao_definir_alvo_inimigo = IntentionNode('DEFINIR ALVO INIMIGO')
+
+            # Nós de decisão
+            heal_in_range = DecisionNode(
+                condition_func=cond_heal_in_range,
+                yes_node=acao_adquirir_cura,
+                no_node=acao_explorar
+            )
+
+            enemy_in_range = DecisionNode(
+                condition_func=cond_enemy_in_range,
+                yes_node=acao_definir_alvo_inimigo,
+                no_node=acao_explorar
+            )
+
+            raiz = DecisionNode(
+                condition_func=cond_agent_half_hp,
+                yes_node=heal_in_range,
+                no_node=enemy_in_range
+            )
+
+            return raiz
+>>>>>>> a15efbb (feat: add explorationPlanLogic for character_agent BDI):code/src/Beliefs/ExplorationPlanLogic.py
         
     def get_intention(self, agent):
         """Interface pública para o agente BDI."""
