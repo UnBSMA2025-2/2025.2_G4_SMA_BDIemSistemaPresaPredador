@@ -1,8 +1,7 @@
-import random
+from communication import MessageDict
 from Interfaces.IBDI_Agent import IBDI_Agent
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
-from utils.move_to_agent import move_to_agent
-from communication import MessageDict
+from BDIPlanLogic.EnemyDesires import get_desire
 
 class Enemy_Agent(IBDI_Agent):
     """
