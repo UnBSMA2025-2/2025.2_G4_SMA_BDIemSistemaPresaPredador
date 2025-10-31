@@ -1,6 +1,7 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+from Beliefs.BattlePlanLogic import BattlePlanLogic
 import random
 from communication import MessageDict
 import uuid
@@ -13,17 +14,19 @@ class Character_Agent(IBDI_Agent):
         self, 
         model, 
         cell, 
-        beliefs
+        beliefs,
+        type='CHARACTER'
         ):
         super().__init__(model)
         self.cell = cell
-        self.type = 'CHARACTER'
+        self.type = type
         self.plan_library = {
-        'SURVIVE': SurvivePlanLogic()
+        'SURVIVE': SurvivePlanLogic(),
+        'BATTLE': BattlePlanLogic(),
         }        
         self.inbox = []
         self.beliefs = beliefs
-        self.desires = ['SURVIVE']
+        self.desires = ['BATTLE']
         self.intention = None
 
     def get_friends(self):
@@ -120,7 +123,6 @@ class Character_Agent(IBDI_Agent):
         )
 
         receiver.inbox.append(response)
-        # self.model.send_message(response)
         self.beliefs['num_healing'] -= 1
         return
         

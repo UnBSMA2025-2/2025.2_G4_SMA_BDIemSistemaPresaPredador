@@ -23,17 +23,23 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
         
+        # Enemy_Agent.create_agents(
+        #     model=self,
+        #     cell=self.grid.all_cells.cells[5],
+        #     n=self.num_agents,
+        #     beliefs=beliefs1
+        # )
         Character_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[0],
+            cell=self.grid.all_cells.cells[1],
             n=self.num_agents,
-            beliefs=beliefs1
+            beliefs=beliefs2
         )
         Character_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[4],
+            cell=self.grid.all_cells.cells[3],
             n=self.num_agents,
-            beliefs=beliefs2
+            beliefs=beliefs1
         )
 
         agent1 = next(iter(self.agents.select(

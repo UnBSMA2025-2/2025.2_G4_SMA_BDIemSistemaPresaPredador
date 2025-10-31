@@ -25,7 +25,11 @@ def propertylayer_portrayal(layer):
         return PropertyLayerStyle(color="blue", alpha=0.8, colorbar=True)
 
 def agent_portrayal(agent):
-    portrayal = AgentPortrayalStyle(size=50, color="black")
+    portrayal = None
+    if agent.type == 'CHARACTER':
+        portrayal = AgentPortrayalStyle(size=50, color="black")
+    else:
+        portrayal = AgentPortrayalStyle(size=50, color="red")
     return portrayal
 
 model_params = {

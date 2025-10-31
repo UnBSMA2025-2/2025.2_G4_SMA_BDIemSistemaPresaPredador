@@ -25,7 +25,7 @@ beliefs2 = {
     'atk': 100,
     'classe': 'MAGO',
     'iniciativa': 14,
-    'displacement': 1,
+    'displacement': 10,
     'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 20,
