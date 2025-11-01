@@ -100,6 +100,15 @@ class Character_Agent(IBDI_Agent):
         
         self.move_to_target(vizinho.coordinate, 1)
 
+    def set_target(self):
+        vizinhos = self.cell.neighborhood.cells
+        for cell in vizinhos:
+            if len(cell.agents) != 0:
+                    if cell.agents[0].type != 'CHARACTER':
+                        self.beliefs['target'] = cell.agents[0]
+                        print(self.beliefs['target'].cell)
+                        return
+
     def get_heal(self, message):
         '''
         Método para receber uma cura via mensagem
@@ -178,6 +187,16 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'ESPERAR':
+                pass
+
+            case 'DEFINIR ALVO':
+                self.set_target()
+                return
+
+            case 'DEFINIR ALVO DO AMIGO':
+                pass
+
+            case 'DEFINIR OUTRO ALVO':
                 pass
 
             case _:

@@ -38,9 +38,9 @@ class RPGModel(mesa.Model):
         # )
         Character_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[10],
+            cell=self.grid.all_cells.cells[2],
             n=self.num_agents,
-            beliefs=beliefs4
+            beliefs=beliefs2
         )
 
         agent1 = next(iter(self.agents.select(
