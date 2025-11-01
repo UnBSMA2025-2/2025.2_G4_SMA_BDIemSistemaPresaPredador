@@ -1,6 +1,7 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+from Beliefs.BattlePlanLogic import BattlePlanLogic
 import random
 from communication import MessageDict
 import uuid
@@ -13,17 +14,19 @@ class Character_Agent(IBDI_Agent):
         self, 
         model, 
         cell, 
-        beliefs
+        beliefs,
+        type='CHARACTER'
         ):
         super().__init__(model)
         self.cell = cell
-        self.type = 'CHARACTER'
+        self.type = type
         self.plan_library = {
-        'SURVIVE': SurvivePlanLogic()
+        'SURVIVE': SurvivePlanLogic(),
+        'BATTLE': BattlePlanLogic(),
         }        
         self.inbox = []
         self.beliefs = beliefs
-        self.desires = ['SURVIVE']
+        self.desires = ['BATTLE']
         self.intention = None
 
     def get_friends(self):
@@ -97,6 +100,31 @@ class Character_Agent(IBDI_Agent):
         
         self.move_to_target(vizinho.coordinate, 1)
 
+    def set_target(self):
+        vizinhos = self.cell.neighborhood.cells
+        for cell in vizinhos:
+            if len(cell.agents) != 0:
+                    if cell.agents[0].type != 'CHARACTER':
+                        self.beliefs['target'] = cell.agents[0]
+                        return
+
+    def set_friens_target(self):
+        vizinhos = self.cell.get_neighborhood(
+                self.beliefs['displacement']).cells 
+        for cell in vizinhos:
+            if len(cell.agents) != 0:
+                if cell.agents[0].type == 'CHARACTER' and cell.agents[0].beliefs['em_batalha']:
+                    self.beliefs['target'] = cell.agents[0].beliefs['target']
+
+    def set_other_target(self):
+        mapa = self.model.grid.all_cells.cells
+        for cell in mapa:
+            if len(cell.agents) != 0:
+                if cell.agents[0].type != 'CHARACTER':
+                    self.beliefs['target'] = cell.agents[0]
+                    self.beliefs['em_batalha'] = True
+                    return
+
     def get_heal(self, message):
         '''
         Método para receber uma cura via mensagem
@@ -120,7 +148,6 @@ class Character_Agent(IBDI_Agent):
         )
 
         receiver.inbox.append(response)
-        # self.model.send_message(response)
         self.beliefs['num_healing'] -= 1
         return
         
@@ -133,6 +160,23 @@ class Character_Agent(IBDI_Agent):
             self.beliefs['hp'] = 0
         else:
             self.beliefs['hp'] = newHp
+
+        response = MessageDict(
+            performative='ATTACK_RESPONSE',
+            sender=self.unique_id,
+            receiver=message.unique_id,
+            content={'is_alive': self.beliefs['is_alive']},
+            conversation_id=message['conversation_id'])
+        receiver = self.model.get_agent_by_id(
+            message['sender'])
+        receiver.inbox.append(response)
+        
+        return
+    
+    def attack_response(self, message):
+        if not message['content']['is_alive']:
+            self.beliefs['target'] = None
+            self.beliefs['em_batalha'] = False
         return
 
     # -------- BDI -------- #
@@ -176,7 +220,19 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'ESPERAR':
-                pass
+                return
+
+            case 'DEFINIR ALVO':
+                self.set_target()
+                return
+
+            case 'DEFINIR ALVO DO AMIGO':
+                self.set_friens_target()
+                return
+
+            case 'DEFINIR OUTRO ALVO':
+                self.set_other_target()
+                return
 
             case _:
                 pass
@@ -186,13 +242,20 @@ class Character_Agent(IBDI_Agent):
             match message['performative']:
                 case 'SEND_HEALING': # Envia uma acura
                     self.send_heal(message)
-                    pass
+                    return
+
                 case 'GET_HEALING': # Recebe a acura
                     self.get_heal(message)
-                    pass
+                    return
+
                 case 'ATTACK_TARGET': # Envia um ataque
                     self.receive_attack(message)
-                    pass
+                    return
+
+                case 'ATTACK_RESPONSE': # Resposta ao ataque do inimigo
+                    self.attack_response(message)
+                    print(self.beliefs['em_batalha'])
+                    return
                 case _:
                     pass
             self.inbox.remove(message)
@@ -206,5 +269,5 @@ class Character_Agent(IBDI_Agent):
         self.deliberate()
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
+        # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
         print("-"*40)

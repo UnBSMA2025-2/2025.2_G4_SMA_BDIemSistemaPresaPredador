@@ -1,11 +1,12 @@
 import mesa
-from collections import defaultdict
 from mesa.discrete_space import OrthogonalMooreGrid
 from Agents.character_agent import Character_Agent 
 from Agents.enemy_agent import Enemy_Agent 
-from mocks.beliefs import beliefs1, beliefs2, beliefs3
-from communication import MessageDict
-
+from mocks.beliefs import (
+    beliefs1, 
+    beliefs2, 
+    beliefs3,
+    beliefs4)
 
 class RPGModel(mesa.Model):
     """
@@ -23,15 +24,21 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
         
-        Character_Agent.create_agents(
+        Enemy_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[0],
+            cell=self.grid.all_cells.cells[9],
             n=self.num_agents,
             beliefs=beliefs1
         )
+        # Character_Agent.create_agents(
+        #     model=self,
+        #     cell=self.grid.all_cells.cells[8],
+        #     n=self.num_agents,
+        #     beliefs=beliefs3
+        # )
         Character_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[4],
+            cell=self.grid.all_cells.cells[7],
             n=self.num_agents,
             beliefs=beliefs2
         )
