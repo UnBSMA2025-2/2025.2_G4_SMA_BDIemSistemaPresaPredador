@@ -46,7 +46,7 @@ beliefs3 = {
     'range': 5,
     'iniciativa': 14,
     'displacement': 10,
-    'em_batalha': True,
+    'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 0,
     'target': None,

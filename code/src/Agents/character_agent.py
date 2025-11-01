@@ -106,16 +106,23 @@ class Character_Agent(IBDI_Agent):
             if len(cell.agents) != 0:
                     if cell.agents[0].type != 'CHARACTER':
                         self.beliefs['target'] = cell.agents[0]
-                        print(self.beliefs['target'].cell)
                         return
 
-    def define_friens_target(self):
+    def set_friens_target(self):
         vizinhos = self.cell.get_neighborhood(
                 self.beliefs['displacement']).cells 
         for cell in vizinhos:
             if len(cell.agents) != 0:
                 if cell.agents[0].type == 'CHARACTER' and cell.agents[0].beliefs['em_batalha']:
                     self.beliefs['target'] = cell.agents[0].beliefs['target']
+
+    def set_other_target(self):
+        mapa = self.model.grid.all_cells.cells
+        for cell in mapa:
+            if len(cell.agents) != 0:
+                if cell.agents[0].type != 'CHARACTER':
+                    self.beliefs['target'] = cell.agents[0]
+                    return
 
     def get_heal(self, message):
         '''
@@ -195,18 +202,19 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'ESPERAR':
-                pass
+                return
 
             case 'DEFINIR ALVO':
                 self.set_target()
                 return
 
             case 'DEFINIR ALVO DO AMIGO':
-                self.define_friens_target()
-                pass
+                self.set_friens_target()
+                return
 
             case 'DEFINIR OUTRO ALVO':
-                pass
+                self.set_other_target()
+                return
 
             case _:
                 pass
