@@ -32,12 +32,8 @@ class IBDI_Agent(CellAgent, abc.ABC):
     # --- Métodos Abstratos (Ciclo BDI) ---
 
     @abc.abstractmethod
-    def update_beliefs(self):
+    def update_desires(self):
         """
-        Fase 1 do BDI: Perceber (Sense).
-        
-        O agente deve coletar informações do ambiente e atualizar seu estado 
-        interno (self.beliefs).
         """
         pass
 
