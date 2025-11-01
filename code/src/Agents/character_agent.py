@@ -1,8 +1,8 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from Beliefs.SurvivePlanLogic import SurvivePlanLogic
-from Beliefs.BattlePlanLogic import BattlePlanLogic
 from Beliefs.ExplorationPlanLogic import ExplorationPlanLogic
+from Beliefs.BattlePlanLogic import BattlePlanLogic
 import random
 from communication import MessageDict
 import uuid
