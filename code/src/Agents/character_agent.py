@@ -122,6 +122,7 @@ class Character_Agent(IBDI_Agent):
             if len(cell.agents) != 0:
                 if cell.agents[0].type != 'CHARACTER':
                     self.beliefs['target'] = cell.agents[0]
+                    self.beliefs['em_batalha'] = True
                     return
 
     def get_heal(self, message):
@@ -159,6 +160,23 @@ class Character_Agent(IBDI_Agent):
             self.beliefs['hp'] = 0
         else:
             self.beliefs['hp'] = newHp
+
+        response = MessageDict(
+            performative='ATTACK_RESPONSE',
+            sender=self.unique_id,
+            receiver=message.unique_id,
+            content={'is_alive': self.beliefs['is_alive']},
+            conversation_id=message['conversation_id'])
+        receiver = self.model.get_agent_by_id(
+            message['sender'])
+        receiver.inbox.append(response)
+        
+        return
+    
+    def attack_response(self, message):
+        if not message['content']['is_alive']:
+            self.beliefs['target'] = None
+            self.beliefs['em_batalha'] = False
         return
 
     # -------- BDI -------- #
@@ -224,13 +242,20 @@ class Character_Agent(IBDI_Agent):
             match message['performative']:
                 case 'SEND_HEALING': # Envia uma acura
                     self.send_heal(message)
-                    pass
+                    return
+
                 case 'GET_HEALING': # Recebe a acura
                     self.get_heal(message)
-                    pass
+                    return
+
                 case 'ATTACK_TARGET': # Envia um ataque
                     self.receive_attack(message)
-                    pass
+                    return
+
+                case 'ATTACK_RESPONSE': # Resposta ao ataque do inimigo
+                    self.attack_response(message)
+                    print(self.beliefs['em_batalha'])
+                    return
                 case _:
                     pass
             self.inbox.remove(message)

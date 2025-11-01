@@ -1,7 +1,7 @@
 # caso onde o agente com pouca vida procura o alvo fraco para atacar
 beliefs1 = {
     'name': 'Marllon',
-    'hp': 10,
+    'hp': 1,
     'hpMax': 100,
     'is_alive': True,
     'def': 30,
