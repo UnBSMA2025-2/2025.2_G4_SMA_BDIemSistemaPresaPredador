@@ -26,19 +26,19 @@ class RPGModel(mesa.Model):
         
         Enemy_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[1],
+            cell=self.grid.all_cells.cells[9],
             n=self.num_agents,
             beliefs=beliefs1
         )
-        # Character_Agent.create_agents(
-        #     model=self,
-        #     cell=self.grid.all_cells.cells[8],
-        #     n=self.num_agents,
-        #     beliefs=beliefs3
-        # )
         Character_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[2],
+            cell=self.grid.all_cells.cells[8],
+            n=self.num_agents,
+            beliefs=beliefs3
+        )
+        Character_Agent.create_agents(
+            model=self,
+            cell=self.grid.all_cells.cells[7],
             n=self.num_agents,
             beliefs=beliefs2
         )

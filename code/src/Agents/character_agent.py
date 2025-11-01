@@ -109,6 +109,14 @@ class Character_Agent(IBDI_Agent):
                         print(self.beliefs['target'].cell)
                         return
 
+    def define_friens_target(self):
+        vizinhos = self.cell.get_neighborhood(
+                self.beliefs['displacement']).cells 
+        for cell in vizinhos:
+            if len(cell.agents) != 0:
+                if cell.agents[0].type == 'CHARACTER' and cell.agents[0].beliefs['em_batalha']:
+                    self.beliefs['target'] = cell.agents[0].beliefs['target']
+
     def get_heal(self, message):
         '''
         Método para receber uma cura via mensagem
@@ -194,6 +202,7 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'DEFINIR ALVO DO AMIGO':
+                self.define_friens_target()
                 pass
 
             case 'DEFINIR OUTRO ALVO':
