@@ -1,12 +1,13 @@
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 from Agents.character_agent import Character_Agent 
-from Agents.enemy_agent import Enemy_Agent 
+from Agents.mob_agent import Mob_Agent 
 from mocks.beliefs import (
     beliefs1, 
     beliefs2, 
     beliefs3,
-    beliefs4)
+    beliefs4,
+    enemy_beliefs1)
 
 class RPGModel(mesa.Model):
     """
@@ -24,34 +25,25 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
         
-        Enemy_Agent.create_agents(
+        Mob_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[9],
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=beliefs1
+            beliefs=enemy_beliefs1
         )
         # Character_Agent.create_agents(
         #     model=self,
-        #     cell=self.grid.all_cells.cells[8],
+        #     cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
         #     n=self.num_agents,
-        #     beliefs=beliefs3
+        #     beliefs=beliefs1,
+        #     type='ENEMY'
         # )
         Character_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[7],
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=beliefs2
+            beliefs=beliefs4
         )
-
-        agent1 = next(iter(self.agents.select(
-            lambda agent: agent.unique_id == 1
-        )))
-        agent2 = next(iter(self.agents.select(
-            lambda agent: agent.unique_id == 2
-        )))
-
-        agent1.beliefs['target'] = agent2
-        agent2.beliefs['target'] = agent1
 
     def get_agent_by_id(self, agent_id):
         return (next(iter(self.agents.select(
