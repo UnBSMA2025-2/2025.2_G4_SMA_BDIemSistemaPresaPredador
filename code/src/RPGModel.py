@@ -26,32 +26,23 @@ class RPGModel(mesa.Model):
         
         Enemy_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[9],
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
             beliefs=beliefs1
         )
         # Character_Agent.create_agents(
         #     model=self,
-        #     cell=self.grid.all_cells.cells[8],
+        #     cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
         #     n=self.num_agents,
-        #     beliefs=beliefs3
+        #     beliefs=beliefs1,
+        #     type='ENEMY'
         # )
         Character_Agent.create_agents(
             model=self,
-            cell=self.grid.all_cells.cells[7],
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=beliefs2
+            beliefs=beliefs4
         )
-
-        agent1 = next(iter(self.agents.select(
-            lambda agent: agent.unique_id == 1
-        )))
-        agent2 = next(iter(self.agents.select(
-            lambda agent: agent.unique_id == 2
-        )))
-
-        agent1.beliefs['target'] = agent2
-        agent2.beliefs['target'] = agent1
 
     def get_agent_by_id(self, agent_id):
         return (next(iter(self.agents.select(

@@ -1,4 +1,4 @@
-from Beliefs.beliefs_tree import (
+from BDIPlanLogic.beliefs_tree import (
     DecisionTree, 
     DecisionNode, 
     IntentionNode
@@ -11,15 +11,19 @@ class BattlePlanLogic:
         
         def cond_has_target(agent):
             """Condição Raiz: O agente tem um alvo?"""
-            return agent.beliefs.get('em_batalha')
+            return agent.beliefs.get('target') is not None
         
         def cond_enable_atk_enemy(agent):
-            range = agent.beliefs['range']
-            pos = agent.cell.coordinate
-            enemy = agent.beliefs['target']
-            enemy_pos = enemy.cell.coordinate
-            d = get_distance(pos[0], pos[1], enemy_pos[0], enemy_pos[1])
-            return range >= d
+            if agent.beliefs['target'] is not None:
+                range = agent.beliefs['range']
+                pos = agent.cell.coordinate
+                enemy = agent.beliefs['target']
+                if enemy.cell is not None:
+                    print(enemy.cell)
+                    enemy_pos = enemy.cell.coordinate
+                    d = get_distance(pos[0], pos[1], enemy_pos[0], enemy_pos[1])
+                    print(f'DISTANCIA: {d}')
+                    return range >= d-2
 
         def cond_is_surrounded(agent):
             vizinhos = agent.cell.neighborhood.cells 

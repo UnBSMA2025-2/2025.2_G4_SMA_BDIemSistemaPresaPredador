@@ -40,7 +40,9 @@ class Enemy_Agent(IBDI_Agent):
             message['sender'])
         receiver.inbox.append(response)
 
-        print(f'MENSAGEM DE RESPOSTA: {message}')
+        if not self.beliefs['is_alive']:
+            print(self.beliefs['is_alive'])
+            self.remove()
         
         return
    

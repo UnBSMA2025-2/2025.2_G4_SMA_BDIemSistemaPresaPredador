@@ -1,7 +1,7 @@
 from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
-from Beliefs.SurvivePlanLogic import SurvivePlanLogic
-from Beliefs.BattlePlanLogic import BattlePlanLogic
+from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
+from BDIPlanLogic.BattlePlanLogic import BattlePlanLogic
 import random
 from communication import MessageDict
 import uuid
@@ -117,13 +117,16 @@ class Character_Agent(IBDI_Agent):
                     self.beliefs['target'] = cell.agents[0].beliefs['target']
 
     def set_other_target(self):
-        mapa = self.model.grid.all_cells.cells
-        for cell in mapa:
-            if len(cell.agents) != 0:
-                if cell.agents[0].type != 'CHARACTER':
-                    self.beliefs['target'] = cell.agents[0]
-                    self.beliefs['em_batalha'] = True
-                    return
+        for i in range(1, self.model.grid.width):
+            vizinhos = self.cell.get_neighborhood(i).cells
+            for cell in vizinhos:
+                if len(cell.agents) != 0:
+                    if cell.agents[0].type != 'CHARACTER':
+                        self.beliefs['target'] = cell.agents[0]
+                        self.beliefs['em_batalha'] = True
+                        print(cell.agents[0].cell)
+                        return
+        
 
     def get_heal(self, message):
         '''
@@ -170,6 +173,10 @@ class Character_Agent(IBDI_Agent):
         receiver = self.model.get_agent_by_id(
             message['sender'])
         receiver.inbox.append(response)
+
+        if not self.beliefs['is_alive']:
+            print(self.beliefs['is_alive'])
+            self.remove()
         
         return
     
@@ -197,9 +204,11 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'APROXIMAR-SE':
-                self.move_to_target(
-                    self.beliefs['target'].cell.coordinate,
-                    self.beliefs['displacement'])
+                if self.beliefs['target'] is not None:
+                    if self.beliefs['target'].cell is not None:
+                        self.move_to_target(
+                            self.beliefs['target'].cell.coordinate,
+                            self.beliefs['displacement'])
                 return
 
             case 'FUGIR':
@@ -242,20 +251,15 @@ class Character_Agent(IBDI_Agent):
             match message['performative']:
                 case 'SEND_HEALING': # Envia uma acura
                     self.send_heal(message)
-                    return
 
                 case 'GET_HEALING': # Recebe a acura
                     self.get_heal(message)
-                    return
 
                 case 'ATTACK_TARGET': # Envia um ataque
                     self.receive_attack(message)
-                    return
 
                 case 'ATTACK_RESPONSE': # Resposta ao ataque do inimigo
                     self.attack_response(message)
-                    print(self.beliefs['em_batalha'])
-                    return
                 case _:
                     pass
             self.inbox.remove(message)
@@ -263,11 +267,12 @@ class Character_Agent(IBDI_Agent):
     def step(self):
         print("-"*40)
         print(f"Executando step do personagem...")
-        print(f'INBOX: {self.inbox}')
+        print(f'INBOX ANTES: {self.inbox}')
         self.process_message()
         self.update_desires()
         self.deliberate()
         self.execute_plan()
+        print(f'INBOX DEPOIS: {self.inbox}')
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
         # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
         print("-"*40)
