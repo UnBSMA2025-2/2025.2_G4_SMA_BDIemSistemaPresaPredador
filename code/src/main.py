@@ -18,8 +18,17 @@ def post_process(ax):
     ax.set_aspect("equal", adjustable="box")
 
 def propertylayer_portrayal(layer):
-    if layer.name == "test layer":
-        return PropertyLayerStyle(color="blue", alpha=0.8, colorbar=True)
+    """
+    Define como desenhar a camada de propriedade.
+    Usamos 'colormap' para dados que variam (0s e 1s).
+    """
+    return PropertyLayerStyle(
+        colormap="Greens",  # Um colormap que vai de "nada" (0) para "verde" (1)
+        alpha=0.5,          # Transparência
+        colorbar=False,     # Não mostrar a barra de legenda
+        vmin=0,             # Mapear o valor 0 para a cor mais clara
+        vmax=1              # Mapear o valor 1 para a cor mais escura (verde)
+    )
 
 def agent_portrayal(agent):
     portrayal = None
@@ -50,7 +59,7 @@ if __name__ == "__main__":
     )
 
     renderer.post_process = post_process
-    # renderer.draw_propertylayer(propertylayer_portrayal)
+    renderer.draw_propertylayer(propertylayer_portrayal)
     renderer.draw_agents(agent_portrayal)
 
     page = SolaraViz(
