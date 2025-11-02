@@ -62,6 +62,11 @@ class Character_Agent(IBDI_Agent):
         )))
         
         if new_cell.is_empty:
+            try:
+                self.model.grid.move_agent(self, new_position)
+            except Exception:
+                self.model.grid.place_agent(self, new_position)
+            # atualiza referência local à célula
             self.cell = new_cell
 
     def attack_enemy(self):
