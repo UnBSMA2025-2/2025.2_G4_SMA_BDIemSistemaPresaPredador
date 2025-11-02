@@ -16,22 +16,24 @@ class ExplorationPlanLogic:
         
         def cond_agent_half_hp_and_not_in_battle(agent):
             """Condição Raiz: agent.hp > 50% and not em_batalha ?"""
+            print(agent.beliefs['hp'] > (agent.beliefs['hpMax'] * 0.5) and not agent.beliefs['em_batalha'])
             return agent.beliefs['hp'] > (agent.beliefs['hpMax'] * 0.5) and not agent.beliefs['em_batalha']
 
         def cond_healing_item_nearby(agent):
             """Condição: Há item de cura ao lado? - verifica células próximas"""
-            healing_cells = agent.model.grid.get_cells_in_range(
-                center=agent.cell.coordinate,
-                range_distance=agent.beliefs['displacement']
-            )
+            healing_cells = agent.cell.get_neighborhood(
+                agent.beliefs['displacement']
+            ).cells
             for cell in healing_cells:
                 if cell.beliefs.get('healing_item_spot', False):
                     agent.beliefs['healing_item_spot'] = cell.coordinate
+                    print('há item de cura ao lado?')
                     return True
             return False
 
         def cond_healing_item_in_range(agent):
             """Condição: Há item de cura em algum lugar do grid?"""
+            print('há item de cura em algum lugar do grid?')
             for cell in agent.model.grid.coord_iter():
                 _, x, y = cell
                 if agent.model.grid[x][y].beliefs.get('healing_item_spot', False):
@@ -41,10 +43,11 @@ class ExplorationPlanLogic:
             
         def cond_enemy_nearby(agent):
             """Condição: há inimigos por perto? - verifica células próximas"""
-            enemy_cells = agent.model.grid.get_cells_in_range(
-                center=agent.cell.coordinate,
-                range_distance=agent.beliefs['displacement']
+
+            enemy_cells = agent.cell.get_neighborhood(
+                agent.beliefs['displacement']
             )
+
             for cell in enemy_cells:
                 if not cell.is_empty:
                     for a in cell.agents:
@@ -75,7 +78,7 @@ class ExplorationPlanLogic:
         # --- PASSO A: Definir todas as FOLHAS (Ações) ---
         acao_adquirir_item = IntentionNode('ADQUIRIR ITEM')
         acao_aproximar_item = IntentionNode('APROXIMAR DO ITEM')
-        acao_explorar_mapa = IntentionNode('EXPLORAR MAPA')
+        acao_explorar_mapa = IntentionNode('EXPLORAR')
         acao_definir_alvo = IntentionNode('DEFINIR ALVO')
 
          # --- PASSO B: Construir os RAMOS (de baixo para cima) ---

@@ -62,11 +62,6 @@ class Character_Agent(IBDI_Agent):
         )))
         
         if new_cell.is_empty:
-            try:
-                self.model.grid.move_agent(self, new_position)
-            except Exception:
-                self.model.grid.place_agent(self, new_position)
-            # atualiza referência local à célula
             self.cell = new_cell
 
     def attack_enemy(self):
@@ -210,7 +205,7 @@ class Character_Agent(IBDI_Agent):
         pass
 
     def deliberate(self):
-        self.intention = self.plan_library[self.desires[0]].get_intention(self)
+        self.intention = self.plan_library[self.desires[2]].get_intention(self)
 
     def execute_plan(self):
         match self.intention:
@@ -263,7 +258,7 @@ class Character_Agent(IBDI_Agent):
                 self.set_other_target()
                 return
             
-            case 'EXPLORAR MAPA':
+            case 'EXPLORAR':
                 vizinho = self.cell.neighborhood.select_random_cell()
                 self.move_to_target(
                     vizinho.coordinate,
@@ -281,6 +276,7 @@ class Character_Agent(IBDI_Agent):
                 self.beliefs['num_healing'] += 1
                 self.cell.beliefs['healing_item_spot'] = False
                 self.beliefs['healing_item_spot'] = None
+                print(self.beliefs['num_healing'])
                 return
 
             case _:
