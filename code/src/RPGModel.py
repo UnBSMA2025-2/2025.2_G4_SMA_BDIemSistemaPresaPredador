@@ -6,7 +6,8 @@ from mocks.beliefs import (
     beliefs1, 
     beliefs2, 
     beliefs3,
-    beliefs4)
+    beliefs4,
+    enemy_beliefs1)
 
 class RPGModel(mesa.Model):
     """
@@ -28,7 +29,7 @@ class RPGModel(mesa.Model):
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=beliefs1
+            beliefs=enemy_beliefs1
         )
         # Character_Agent.create_agents(
         #     model=self,

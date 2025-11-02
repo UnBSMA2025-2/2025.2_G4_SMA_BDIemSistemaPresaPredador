@@ -29,16 +29,15 @@ class SurvivePlanLogic:
             return agent.beliefs['num_healing'] > 1
         
         def cond_distance(agent):
-            distance = get_distance(
-                x1=agent.cell.coordinate[0],
-                y1=agent.cell.coordinate[1],
-                x2=agent.beliefs['target'].cell.coordinate[0],
-                y2=agent.beliefs['target'].cell.coordinate[1],
-                )
-
-            if distance is None:
-                return False # Se não sei a distância, não posso atacar
-            return distance == 1
+            if agent.beliefs['target'] is not None and agent.cell is not None and agent.beliefs['target'].cell is not None:
+                distance = get_distance(
+                    x1=agent.cell.coordinate[0],
+                    y1=agent.cell.coordinate[1],
+                    x2=agent.beliefs['target'].cell.coordinate[0],
+                    y2=agent.beliefs['target'].cell.coordinate[1],
+                    )
+                return distance == 1
+            return False
         
         def cond_friend_free(agent):
             if len(agent.get_friends()) == 0:

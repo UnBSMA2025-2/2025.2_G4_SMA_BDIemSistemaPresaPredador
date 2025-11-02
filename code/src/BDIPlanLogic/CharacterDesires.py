@@ -11,4 +11,4 @@ def get_desire(agent):
         return 'SURVIVE'
     elif cond_there_are_enemies(agent=agent):
         return 'BATTLE'
-    return None
+    return 'SURVIVE'
