@@ -26,7 +26,7 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
 
-        healing_item_prob = 0.5 # 10% de chance de ter item de cura na célula
+        healing_item_prob = 0.5 # 50% de chance de ter item de cura na célula
 
         layer_name = "healing_item_spot"
 
@@ -39,17 +39,15 @@ class RPGModel(mesa.Model):
                 cell.beliefs = {}
             cell.beliefs['healing_item_spot'] = (cell_value == 1)
         
-        
         self.healing_cells = [
             (cell.coordinate, cell.beliefs.get('healing_item_spot', False))
             for cell in self.grid.all_cells.cells
         ]
 
+        self.grid.add_property_layer(healing_layer)
         healing_layer = PropertyLayer(layer_name, dimensions=self.grid.dimensions)
 
-        self.grid.add_property_layer(healing_layer)
-
-        Enemy_Agent.create_agents(
+        Mob_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
@@ -60,7 +58,7 @@ class RPGModel(mesa.Model):
         #     cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
         #     n=self.num_agents,
         #     beliefs=beliefs1,
-        #     type='ENEMY'
+        #     type='ENEMY
         # )
         Character_Agent.create_agents(
             model=self,
@@ -68,16 +66,6 @@ class RPGModel(mesa.Model):
             n=self.num_agents,
             beliefs=beliefs4
         )
-
-        agent1 = next(iter(self.agents.select(
-            lambda agent: agent.unique_id == 1
-        )))
-        agent2 = next(iter(self.agents.select(
-            lambda agent: agent.unique_id == 2
-        )))
-
-        agent1.beliefs['target'] = agent2
-        agent2.beliefs['target'] = agent1
 
     def get_agent_by_id(self, agent_id):
         return (next(iter(self.agents.select(
