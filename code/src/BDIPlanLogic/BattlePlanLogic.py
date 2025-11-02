@@ -1,4 +1,4 @@
-from Beliefs.beliefs_tree import (
+from BDIPlanLogic.beliefs_tree import (
     DecisionTree, 
     DecisionNode, 
     IntentionNode
@@ -11,32 +11,36 @@ class BattlePlanLogic:
         
         def cond_has_target(agent):
             """Condição Raiz: O agente tem um alvo?"""
-            return agent.beliefs.get('em_batalha')
+            return agent.beliefs.get('target') is not None
         
         def cond_enable_atk_enemy(agent):
-            range = agent.beliefs['range']
-            pos = agent.cell.coordinate
-            enemy = agent.beliefs['target']
-            enemy_pos = enemy.cell.coordinate
-            d = get_distance(pos[0], pos[1], enemy_pos[0], enemy_pos[1])
-            return range >= d
+            if agent.beliefs['target'] is not None and agent.cell is not None:
+                range = agent.beliefs['range']
+                pos = agent.cell.coordinate
+                enemy = agent.beliefs['target']
+                if enemy.cell is not None:
+                    enemy_pos = enemy.cell.coordinate
+                    d = get_distance(pos[0], pos[1], enemy_pos[0], enemy_pos[1])
+                    return range >= d-2
 
         def cond_is_surrounded(agent):
-            vizinhos = agent.cell.neighborhood.cells 
-            for cell in vizinhos:
-                if len(cell.agents) != 0:
-                    if cell.agents[0].type != 'CHARACTER':
-                        return True
-            return False
+            if agent is not None and agent.cell is not None:
+                vizinhos = agent.cell.neighborhood.cells 
+                for cell in vizinhos:
+                    if len(cell.agents) != 0:
+                        if cell.agents[0].type != 'CHARACTER':
+                            return True
+                return False
 
         def cond_friend_attacking(agent):
-            vizinhos = agent.cell.get_neighborhood(
-                agent.beliefs['displacement']).cells 
-            for cell in vizinhos:
-                if len(cell.agents) != 0:
-                    if cell.agents[0].type == 'CHARACTER' and cell.agents[0].beliefs['em_batalha']:
-                        return True
-            return False
+            if agent is not None and agent.cell is not None:
+                vizinhos = agent.cell.get_neighborhood(
+                    agent.beliefs['displacement']).cells 
+                for cell in vizinhos:
+                    if len(cell.agents) != 0:
+                        if cell.agents[0].type == 'CHARACTER' and cell.agents[0].beliefs['em_batalha']:
+                            return True
+                return False
 
         # 2. Construir a árvore
         raiz = self._build_tree(

@@ -55,17 +55,32 @@ beliefs3 = {
 
 beliefs4 = {
     'name': 'Lucas',
-    'hp': 1,
-    'hpMax': 2000,
+    'hp': 5,
+    'hpMax': 65,
     'is_alive': True,
     'def': 10,
-    'atk': 100,
+    'atk': 25,
     'classe': 'GUERREIRO',
-    'range': 5,
+    'range': 1,
     'iniciativa': 14,
     'displacement': 1,
-    'em_batalha': True,
+    'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 20,
     'target': None,
+}
+
+enemy_beliefs1 = {
+    'name': 'Goblin',
+    'hp': 65,
+    'hpMax': 65,
+    'is_alive': True,
+    'def': 10,
+    'atk': 5,
+    'range': 2,
+    'iniciativa': 14,
+    'displacement': 2,
+    'em_batalha': False,
+    'target': None,
+    'received_attack': None
 }

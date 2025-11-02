@@ -12,9 +12,6 @@ from mesa.visualization.components import (
 import solara
 
 
-def agent_portrayal(agent):
-    return AgentPortrayalStyle(color="tab:orange", size=50)
-
 def post_process(ax):
     """Customize the matplotlib axes after rendering."""
     ax.set_title("RPG Model")
@@ -38,18 +35,18 @@ def agent_portrayal(agent):
 model_params = {
     "n": {
         "type": "SliderInt",
-        "value": 50,
+        "value": 2,  # <--- MUDADO (seu valor inicial era 2)
         "label": "Number of agents:",
-        "min": 10,
+        "min": 3,
         "max": 100,
         "step": 1,
     },
-    "width": 10,
-    "height": 10,
+    "width": 40,   # <--- MUDADO (seu valor inicial era 40)
+    "height": 20,  # <--- MUDADO (seu valor inicial era 20)
 }
 
 if __name__ == "__main__":
-    modelo_rpg = RPGModel(width=40, height=20, n=1)
+    modelo_rpg = RPGModel(width=40, height=20, n=3)
     
     renderer = SpaceRenderer(model=modelo_rpg, backend="matplotlib").render(
         agent_portrayal=agent_portrayal
@@ -66,4 +63,6 @@ if __name__ == "__main__":
         name="RPG Model",
     )
     # This is required to render the visualization in the Jupyter notebook
+
     page
+
