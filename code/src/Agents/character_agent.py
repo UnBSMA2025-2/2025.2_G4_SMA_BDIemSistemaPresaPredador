@@ -183,7 +183,8 @@ class Character_Agent(IBDI_Agent):
             conversation_id=message['conversation_id'])
         receiver = self.model.get_agent_by_id(
             message['sender'])
-        receiver.inbox.append(response)
+        if receiver is not None:
+            receiver.inbox.append(response)
 
         if not self.beliefs['is_alive']:
             self.remove()
