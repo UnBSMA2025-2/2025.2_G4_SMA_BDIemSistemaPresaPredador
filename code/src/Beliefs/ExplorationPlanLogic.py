@@ -11,14 +11,19 @@ class ExplorationPlanLogic:
     """
     
     def __init__(self):
-        # Funções de condição (consultam crenças do agente)
+        # 1. Funções de Condição (Consultas às Crenças)
+        #    Estas funções leem o dicionário 'context' (crenças)
+        
         def cond_agent_half_hp_and_not_in_battle(agent):
-            """Condição Raiz: hp > 50% e não está em batalha"""
-            return agent.beliefs['hp'] > (agent.beliefs['hpMax'] * 0.5) and not agent.beliefs.get('em_batalha', False)
+            """Condição Raiz: agent.hp > 50% and not em_batalha ?"""
+            return agent.beliefs['hp'] > (agent.beliefs['hpMax'] * 0.5) and not agent.beliefs['em_batalha']
 
         def cond_healing_item_nearby(agent):
-            """Há item de cura ao lado? Salva coordenada se sim."""
-            healing_cells = agent.cell.get_neighborhood(agent.beliefs['displacement']).cells
+            """Condição: Há item de cura ao lado? - verifica células próximas"""
+            healing_cells = agent.model.grid.get_cells_in_range(
+                center=agent.cell.coordinate,
+                range_distance=agent.beliefs['displacement']
+            )
             for cell in healing_cells:
                 if cell.beliefs.get('healing_item_spot', False):
                     agent.beliefs['healing_item_spot'] = cell.coordinate
@@ -26,25 +31,29 @@ class ExplorationPlanLogic:
             return False
 
         def cond_healing_item_in_range(agent):
-            """Há item de cura em algum lugar do grid? Salva coordenada se sim."""
+            """Condição: Há item de cura em algum lugar do grid?"""
             for cell in agent.model.grid.coord_iter():
                 _, x, y = cell
                 if agent.model.grid[x][y].beliefs.get('healing_item_spot', False):
                     agent.beliefs['healing_item_spot'] = (x, y)
                     return True
             return False
-
+            
         def cond_enemy_nearby(agent):
-            """Há inimigos por perto?"""
-            enemy_cells = agent.cell.get_neighborhood(agent.beliefs['displacement'])
+            """Condição: há inimigos por perto? - verifica células próximas"""
+            enemy_cells = agent.model.grid.get_cells_in_range(
+                center=agent.cell.coordinate,
+                range_distance=agent.beliefs['displacement']
+            )
             for cell in enemy_cells:
                 if not cell.is_empty:
                     for a in cell.agents:
+                        # TO-DO : ajustar tipo de inimigo conforme modelo
                         if a.type == 'ANIMAL':
                             return True
             return False
 
-        # Construir a árvore de decisão
+        # 2. Construir a árvore e armazenar o "motor"
         raiz = self._build_tree(
             cond_agent_half_hp_and_not_in_battle,
             cond_healing_item_nearby,
@@ -54,21 +63,23 @@ class ExplorationPlanLogic:
         self.decision_tree = DecisionTree(raiz)
 
     def _build_tree(
-        self,
-        cond_agent_half_hp_and_not_in_battle,
-        cond_healing_item_nearby,
-        cond_healing_item_in_range,
-        cond_enemy_nearby):
+            self,
+            cond_agent_half_hp_and_not_in_battle, 
+            cond_healing_item_nearby, 
+            cond_healing_item_in_range,
+            cond_enemy_nearby):
         """
-        Constrói a árvore de decisão para exploração
+        Constrói a árvore de decisão...
         """
-        # Folhas (ações)
+        
+        # --- PASSO A: Definir todas as FOLHAS (Ações) ---
         acao_adquirir_item = IntentionNode('ADQUIRIR ITEM')
         acao_aproximar_item = IntentionNode('APROXIMAR DO ITEM')
-        acao_explorar_mapa = IntentionNode('EXPLORAR')
+        acao_explorar_mapa = IntentionNode('EXPLORAR MAPA')
         acao_definir_alvo = IntentionNode('DEFINIR ALVO')
 
-        # Ramos
+         # --- PASSO B: Construir os RAMOS (de baixo para cima) ---
+
         healing_item_in_range = DecisionNode(
             condition_func=cond_healing_item_in_range,
             yes_node=acao_aproximar_item,
@@ -92,8 +103,9 @@ class ExplorationPlanLogic:
             yes_node=healing_item_nearby,
             no_node=enemy_nearby
         )
-        return raiz
 
+        return raiz
+        
     def get_intention(self, agent):
         """Interface pública para o agente BDI."""
         return self.decision_tree.decide(agent)
