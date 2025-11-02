@@ -9,9 +9,6 @@ from mesa.visualization.components import (
     AgentPortrayalStyle, PropertyLayerStyle
     )
 
-def agent_portrayal(agent):
-    return AgentPortrayalStyle(color="tab:orange", size=50)
-
 def post_process(ax):
     """Customize the matplotlib axes after rendering."""
     ax.set_title("RPG Model")
@@ -21,8 +18,17 @@ def post_process(ax):
     ax.set_aspect("equal", adjustable="box")
 
 def propertylayer_portrayal(layer):
-    if layer.name == "test layer":
-        return PropertyLayerStyle(color="blue", alpha=0.8, colorbar=True)
+    """
+    Define como desenhar a camada de propriedade.
+    Usamos 'colormap' para dados que variam (0s e 1s).
+    """
+    return PropertyLayerStyle(
+        colormap="Greens",  # Um colormap que vai de "nada" (0) para "verde" (1)
+        alpha=0.5,          # Transparência
+        colorbar=False,     # Não mostrar a barra de legenda
+        vmin=0,             # Mapear o valor 0 para a cor mais clara
+        vmax=1              # Mapear o valor 1 para a cor mais escura (verde)
+    )
 
 def agent_portrayal(agent):
     portrayal = None
@@ -35,25 +41,29 @@ def agent_portrayal(agent):
 model_params = {
     "n": {
         "type": "SliderInt",
-        "value": 50,
+        "value": 3,
         "label": "Number of agents:",
-        "min": 10,
+        "min": 3,
         "max": 100,
         "step": 1,
     },
-    "width": 10,
-    "height": 10,
+    "width": 40,
+    "height": 20,
 }
 
 if __name__ == "__main__":
-    modelo_rpg = RPGModel(width=40, height=20, n=1)
+    modelo_rpg = RPGModel(
+        width=model_params["width"], 
+        height=model_params["height"], 
+        n=model_params["n"]["value"]
+    )
     
     renderer = SpaceRenderer(model=modelo_rpg, backend="matplotlib").render(
         agent_portrayal=agent_portrayal
     )
 
     renderer.post_process = post_process
-    # renderer.draw_propertylayer(propertylayer_portrayal)
+    renderer.draw_propertylayer(propertylayer_portrayal)
     renderer.draw_agents(agent_portrayal)
 
     page = SolaraViz(
