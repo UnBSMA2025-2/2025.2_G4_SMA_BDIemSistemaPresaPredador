@@ -61,11 +61,6 @@ class Character_Agent(IBDI_Agent):
         )))
         
         if new_cell.is_empty:
-            try:
-                self.model.grid.move_agent(self, new_position)
-            except Exception:
-                self.model.grid.place_agent(self, new_position)
-            # atualiza referência local à célula
             self.cell = new_cell
 
     def attack_enemy(self):
@@ -191,7 +186,7 @@ class Character_Agent(IBDI_Agent):
         pass
 
     def deliberate(self):
-        self.intention = self.plan_library[self.desires[0]].get_intention(self)
+        self.intention = self.plan_library[self.desires[2]].get_intention(self)
 
     def execute_plan(self):
         match self.intention:
@@ -204,9 +199,11 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'APROXIMAR-SE':
-                self.move_to_target(
-                    self.beliefs['target'].cell.coordinate,
-                    self.beliefs['displacement'])
+                if self.beliefs['target'] is not None:
+                    if self.beliefs['target'].cell is not None:
+                        self.move_to_target(
+                            self.beliefs['target'].cell.coordinate,
+                            self.beliefs['displacement'])
                 return
 
             case 'FUGIR':
@@ -241,7 +238,7 @@ class Character_Agent(IBDI_Agent):
                 self.set_other_target()
                 return
             
-            case 'EXPLORAR MAPA':
+            case 'EXPLORAR':
                 vizinho = self.cell.neighborhood.select_random_cell()
                 self.move_to_target(
                     vizinho.coordinate,
@@ -259,6 +256,7 @@ class Character_Agent(IBDI_Agent):
                 self.beliefs['num_healing'] += 1
                 self.cell.beliefs['healing_item_spot'] = False
                 self.beliefs['healing_item_spot'] = None
+                print(self.beliefs['num_healing'])
                 return
 
             case _:
@@ -295,6 +293,6 @@ class Character_Agent(IBDI_Agent):
         self.update_desires()
         self.deliberate()
         self.execute_plan()
-        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
+        # print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
         # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
         print("-"*40)
