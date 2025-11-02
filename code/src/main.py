@@ -1,3 +1,4 @@
+from components.agents_info import AgentInfo
 from RPGModel import RPGModel
 from mesa.visualization import (
     SolaraViz, 
@@ -8,6 +9,8 @@ from mesa.visualization import (
 from mesa.visualization.components import (
     AgentPortrayalStyle, PropertyLayerStyle
     )
+import solara
+
 
 def agent_portrayal(agent):
     return AgentPortrayalStyle(color="tab:orange", size=50)
@@ -27,9 +30,9 @@ def propertylayer_portrayal(layer):
 def agent_portrayal(agent):
     portrayal = None
     if agent.type == 'CHARACTER':
-        portrayal = AgentPortrayalStyle(size=50, color="black")
+        portrayal = AgentPortrayalStyle(size=50, color="black", marker="^")
     else:
-        portrayal = AgentPortrayalStyle(size=50, color="red")
+        portrayal = AgentPortrayalStyle(size=50, color="red", marker="X")
     return portrayal
 
 model_params = {
@@ -53,16 +56,14 @@ if __name__ == "__main__":
     )
 
     renderer.post_process = post_process
-    # renderer.draw_propertylayer(propertylayer_portrayal)
     renderer.draw_agents(agent_portrayal)
 
     page = SolaraViz(
         modelo_rpg,
         renderer,
-        components=[],
+        components=[AgentInfo],  # Adicionar componente de informações
         model_params=model_params,
         name="RPG Model",
     )
     # This is required to render the visualization in the Jupyter notebook
     page
-    
