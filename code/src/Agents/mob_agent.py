@@ -2,6 +2,7 @@ from Interfaces.IBDI_Agent import IBDI_Agent
 from communication import MessageDict
 from BDIPlanLogic.RetaliateAttackPlanLogic import RetaliateAttackPlanLogic
 from BDIPlanLogic.EnemyDesires import get_desire
+from utils.move_to_agent import move_to_agent
 import uuid
 import random
 
@@ -52,6 +53,33 @@ class Mob_Agent(IBDI_Agent):
             self.remove()
         
         return
+    
+    def move_to_target(self, target_coordinate, displacement):
+        h = self.model.grid.height
+        l = self.model.grid.width
+        
+        if self.cell is  None:
+            return False
+        
+        pos_a = self.cell.coordinate
+        pos_b = target_coordinate
+        
+        new_position = move_to_agent(
+            h=h, 
+            l=l, 
+            ax=pos_a[0],
+            ay=pos_a[1],
+            bx=pos_b[0], 
+            by=pos_b[1], 
+            max_step=displacement
+        )
+        
+        new_cell = next(iter(self.model.grid.all_cells.select(
+            lambda cell: cell.coordinate == new_position
+        )))
+        
+        if new_cell.is_empty:
+            self.cell = new_cell
    
     def attack_enemy(self):
         enemyAgent = self.beliefs['target']
@@ -97,6 +125,11 @@ class Mob_Agent(IBDI_Agent):
                 return
             
             case 'APROXIMAR-SE': # Resposta ao ataque do inimigo
+                if self.beliefs['target'] is not None:
+                    if self.beliefs['target'].cell is not None:
+                        self.move_to_target(
+                            self.beliefs['target'].cell.coordinate,
+                            self.beliefs['displacement'])
                 return
             
             case _:

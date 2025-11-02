@@ -46,8 +46,10 @@ class RPGModel(mesa.Model):
         )
 
     def get_agent_by_id(self, agent_id):
-        return (next(iter(self.agents.select(
+        agent = (next(iter(self.agents.select(
             lambda agent: agent.unique_id == agent_id))))
+        if agent is not None:
+            return agent
 
     def step(self):
         print("\n" + "="*40)

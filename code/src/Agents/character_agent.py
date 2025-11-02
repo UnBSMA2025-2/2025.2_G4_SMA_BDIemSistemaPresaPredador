@@ -215,7 +215,6 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'APROXIMAR-SE':
-                print(self.beliefs['target'])
                 if self.beliefs['target'] is not None:
                     if self.beliefs['target'].cell is not None:
                         self.move_to_target(
