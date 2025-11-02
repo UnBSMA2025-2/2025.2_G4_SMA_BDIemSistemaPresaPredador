@@ -139,7 +139,6 @@ class Character_Agent(IBDI_Agent):
                         self.beliefs['em_batalha'] = True
                         return
         
-
     def get_heal(self, message):
         '''
         Método para receber uma cura via mensagem
@@ -280,12 +279,11 @@ class Character_Agent(IBDI_Agent):
     def step(self):
         print("-"*40)
         print(f"Executando step do personagem...")
-        # print(f'INBOX ANTES: {self.inbox}')
+        print(f'INBOX: {self.inbox}')
         self.process_message()
         self.update_desires()
         self.deliberate()
         self.execute_plan()
-        # print(f'INBOX DEPOIS: {self.inbox}')
+        print(f'INBOX DEPOIS: {self.inbox}')
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
         print("-"*40)

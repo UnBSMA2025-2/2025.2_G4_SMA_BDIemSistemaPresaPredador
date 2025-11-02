@@ -2,6 +2,8 @@ from Interfaces.IBDI_Agent import IBDI_Agent
 from communication import MessageDict
 from BDIPlanLogic.RetaliateAttackPlanLogic import RetaliateAttackPlanLogic
 from BDIPlanLogic.EnemyDesires import get_desire
+import uuid
+import random
 
 class Mob_Agent(IBDI_Agent):
     """
@@ -51,6 +53,20 @@ class Mob_Agent(IBDI_Agent):
         
         return
    
+    def attack_enemy(self):
+        enemyAgent = self.beliefs['target']
+
+        message = MessageDict(
+            performative='ATTACK_TARGET',
+            sender=self.unique_id,
+            receiver=enemyAgent.unique_id,
+            content={'atk': self.beliefs['atk']},
+            conversation_id=uuid.uuid4()
+        )
+
+        enemyAgent.inbox.append(message)
+        return
+
     def set_attacked_target(self):
         if self.beliefs['received_attack'] is not None:
             enemy = self.model.agents.select(
@@ -71,7 +87,18 @@ class Mob_Agent(IBDI_Agent):
         match self.intention:
             case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
                 self.set_attacked_target()
-                
+                return
+            
+            case 'CONTINUAR': # Resposta ao ataque do inimigo
+                return
+            
+            case 'ATACAR': # Resposta ao ataque do inimigo
+                self.attack_enemy()
+                return
+            
+            case 'APROXIMAR-SE': # Resposta ao ataque do inimigo
+                return
+            
             case _:
                 pass
 
