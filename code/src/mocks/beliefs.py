@@ -13,6 +13,7 @@ beliefs1 = {
     'em_batalha': True,
     'hp_agente_alvo': 40,
     'num_healing': 2,
+    'healing_item_spot': None,
     'target': None,
 }
 
@@ -31,6 +32,7 @@ beliefs2 = {
     'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 20,
+    'healing_item_spot': None,
     'target': None,
 }
 
@@ -49,6 +51,7 @@ beliefs3 = {
     'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 0,
+    'healing_item_spot': None,
     'target': None,
 }
 
@@ -67,6 +70,7 @@ beliefs4 = {
     'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 20,
+    'healing_item_spot': None,
     'target': None,
 }
 
