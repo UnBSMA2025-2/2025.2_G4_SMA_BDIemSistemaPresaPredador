@@ -3,7 +3,7 @@ from communication import MessageDict
 from BDIPlanLogic.RetaliateAttackPlanLogic import RetaliateAttackPlanLogic
 from BDIPlanLogic.EnemyDesires import get_desire
 
-class Enemy_Agent(IBDI_Agent):
+class Mob_Agent(IBDI_Agent):
     """
     Um agente que representa um personagem inimigo com lógica BDI.
     """

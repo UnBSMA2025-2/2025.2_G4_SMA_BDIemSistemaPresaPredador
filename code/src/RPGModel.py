@@ -1,7 +1,7 @@
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 from Agents.character_agent import Character_Agent 
-from Agents.enemy_agent import Enemy_Agent 
+from Agents.mob_agent import Mob_Agent 
 from mocks.beliefs import (
     beliefs1, 
     beliefs2, 
@@ -25,7 +25,7 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
         
-        Enemy_Agent.create_agents(
+        Mob_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
