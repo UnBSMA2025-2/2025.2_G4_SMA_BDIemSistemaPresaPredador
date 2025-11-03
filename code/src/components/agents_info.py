@@ -1,7 +1,7 @@
 import solara
 import os
 import threading
-from RPGModel import RPGModel  # seu modelo com grid e agentes
+from RPGModel import RPGModel
 
 # --- Estilos ---
 STYLE_CARD_SCROLL = {
@@ -68,8 +68,11 @@ def AgentInfo(model):
             for agent in cell.agents:
                 agent_type = agent.type
                 avatar_url = AVATAR_MAP.get(agent_type, AVATAR_PLACEHOLDER)
+
+                intention = getattr(agent, "intention", "Desconhecida")
+
                 agent_info = {
-                    "ID": agent.unique_id,
+                    "Intenção": intention,
                     "Tipo": agent.type,
                     "Posição": f"({cell.coordinate[0]}, {cell.coordinate[1]})",
                     "Avatar": avatar_url,
@@ -93,8 +96,10 @@ def AgentInfo(model):
 
         if agents_data:
             all_keys = set()
-            for d in agents_data: all_keys.update(d.keys())
-            preferred_order = ["Avatar", "ID", "Nome", "Tipo", "Vida", "Posição", "Em Batalha", "Curas"]
+            for d in agents_data:
+                all_keys.update(d.keys())
+
+            preferred_order = ["Avatar", "Nome", "Tipo", "Intenção", "Vida", "Posição", "Em Batalha", "Curas"]
             keys = [key for key in preferred_order if key in all_keys] + \
                    [key for key in all_keys if key not in preferred_order]
 
@@ -141,4 +146,3 @@ def AgentInfo(model):
                 solara.Info(f"Mostrando 10 de {len(agents_data)} membros da guilda.")
         else:
             solara.Warning("Nenhum membro encontrado no quadro.")
-
