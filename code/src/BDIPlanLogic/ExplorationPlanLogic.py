@@ -17,22 +17,23 @@ class ExplorationPlanLogic:
             return agent.beliefs['hp'] > (agent.beliefs['hpMax'] * 0.5) and not agent.beliefs.get('em_batalha', False)
 
         def cond_healing_item_nearby(agent):
-            """Há item de cura ao lado? Salva coordenada se sim."""
+            """
+            Condição: Há item de cura no raio de visão?
+            Salva a coordenada do item mais próximo.
+            """
             healing_cells = agent.cell.get_neighborhood(agent.beliefs['displacement']).cells
             for cell in healing_cells:
                 if cell.beliefs.get('healing_item_spot', False):
                     agent.beliefs['healing_item_spot'] = cell.coordinate
                     return True
+            agent.beliefs['healing_item_spot'] = None
             return False
 
-        def cond_healing_item_in_range(agent):
-            """Há item de cura em algum lugar do grid? Salva coordenada se sim."""
-            for cell in agent.model.grid.coord_iter():
-                _, x, y = cell
-                if agent.model.grid[x][y].beliefs.get('healing_item_spot', False):
-                    agent.beliefs['healing_item_spot'] = (x, y)
-                    return True
-            return False
+        def cond_healing_item_on_cell(agent):
+            """
+            Condição: O agente está em cima de um item de cura?
+            """
+            return agent.cell.beliefs.get('healing_item_spot', False)
 
         def cond_enemy_nearby(agent):
             """Há inimigos por perto?"""
@@ -48,7 +49,7 @@ class ExplorationPlanLogic:
         raiz = self._build_tree(
             cond_agent_half_hp_and_not_in_battle,
             cond_healing_item_nearby,
-            cond_healing_item_in_range,
+            cond_healing_item_on_cell,
             cond_enemy_nearby,
         )
         self.decision_tree = DecisionTree(raiz)
@@ -57,7 +58,7 @@ class ExplorationPlanLogic:
         self,
         cond_agent_half_hp_and_not_in_battle,
         cond_healing_item_nearby,
-        cond_healing_item_in_range,
+        cond_healing_item_on_cell,
         cond_enemy_nearby):
         """
         Constrói a árvore de decisão para exploração
@@ -69,19 +70,22 @@ class ExplorationPlanLogic:
         acao_definir_alvo = IntentionNode('DEFINIR ALVO')
 
         # Ramos
-        healing_item_in_range = DecisionNode(
-            condition_func=cond_healing_item_in_range,
-            yes_node=acao_aproximar_item,
-            no_node=acao_explorar_mapa
-        )
-
-        healing_item_nearby = DecisionNode(
+        ramo_item_nao_visivel = DecisionNode(
             condition_func=cond_healing_item_nearby,
-            yes_node=acao_adquirir_item,
-            no_node=healing_item_in_range
+            yes_node=acao_aproximar_item, # Sim, há item PERTO? Aproxime-se.
+            no_node=acao_explorar_mapa     # Não? Então explore.
         )
 
-        enemy_nearby = DecisionNode(
+        ramo_item_presente = DecisionNode(
+            condition_func=cond_healing_item_on_cell,
+            yes_node=acao_adquirir_item,      # Sim? Adquira o item.
+            no_node=ramo_item_nao_visivel  # Não? Verifique se há um por perto.
+        )
+
+        # Pulamos diretamente para verificar se há um item presente onde o agente está
+        ramo_hp_ok = ramo_item_presente 
+
+        ramo_enemy_nearby = DecisionNode(
             condition_func=cond_enemy_nearby,
             yes_node=acao_definir_alvo,
             no_node=acao_explorar_mapa
@@ -89,8 +93,8 @@ class ExplorationPlanLogic:
 
         raiz = DecisionNode(
             condition_func=cond_agent_half_hp_and_not_in_battle,
-            yes_node=healing_item_nearby,
-            no_node=enemy_nearby
+            yes_node=ramo_hp_ok,
+            no_node=ramo_enemy_nearby
         )
         return raiz
 
