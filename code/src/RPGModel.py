@@ -1,6 +1,7 @@
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 from mesa.discrete_space.property_layer import PropertyLayer
+from mesa.discrete_space.property_layer import PropertyLayer
 from Agents.character_agent import Character_Agent 
 from Agents.mob_agent import Mob_Agent 
 from mocks.beliefs import (
@@ -26,7 +27,7 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
 
-        healing_item_prob = 0.5 # 50% de chance de ter item de cura na célula
+        healing_item_prob = 0.5 # 10% de chance de ter item de cura na célula
 
         layer_name = "healing_item_spot"
 
@@ -39,15 +40,17 @@ class RPGModel(mesa.Model):
                 cell.beliefs = {}
             cell.beliefs['healing_item_spot'] = (cell_value == 1)
         
+        
         self.healing_cells = [
             (cell.coordinate, cell.beliefs.get('healing_item_spot', False))
             for cell in self.grid.all_cells.cells
         ]
 
-        self.grid.add_property_layer(healing_layer)
         healing_layer = PropertyLayer(layer_name, dimensions=self.grid.dimensions)
 
-        Mob_Agent.create_agents(
+        self.grid.add_property_layer(healing_layer)
+
+        Enemy_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,

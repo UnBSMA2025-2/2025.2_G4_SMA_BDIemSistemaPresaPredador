@@ -41,7 +41,7 @@ def agent_portrayal(agent):
 model_params = {
     "n": {
         "type": "SliderInt",
-        "value": 2,  # <--- MUDADO (seu valor inicial era 2)
+        "value": 3,
         "label": "Number of agents:",
         "min": 3,
         "max": 100,

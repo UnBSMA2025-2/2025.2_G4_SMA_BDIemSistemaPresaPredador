@@ -2,7 +2,7 @@ from Interfaces.IBDI_Agent import IBDI_Agent
 from utils.move_to_agent import move_to_agent
 from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
 from BDIPlanLogic.BattlePlanLogic import BattlePlanLogic
-from Beliefs.ExplorationPlanLogic import ExplorationPlanLogic
+from BDIPlanLogic.ExplorationPlanLogic import ExplorationPlanLogic
 import random
 from communication import MessageDict
 import uuid
