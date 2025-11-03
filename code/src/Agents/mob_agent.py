@@ -1,14 +1,14 @@
-from Interfaces.IBDI_Agent import IBDI_Agent
 from communication import MessageDict
+from Interfaces.IBDI_Agent import IBDI_Agent
+from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
 from BDIPlanLogic.RetaliateAttackPlanLogic import RetaliateAttackPlanLogic
 from BDIPlanLogic.EnemyDesires import get_desire
 from utils.move_to_agent import move_to_agent
 import uuid
-import random
 
 class Mob_Agent(IBDI_Agent):
     """
-    Um agente que representa um personagem inimigo com lógica BDI.
+    Um agente que representa um inimigo comum com lógica BDI.
     """
     def __init__(self, 
         model, 
@@ -112,28 +112,38 @@ class Mob_Agent(IBDI_Agent):
         pass
 
     def execute_plan(self):
-        match self.intention:
-            case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
-                self.set_attacked_target()
-                return
-            
-            case 'CONTINUAR': # Resposta ao ataque do inimigo
-                return
-            
-            case 'ATACAR': # Resposta ao ataque do inimigo
-                self.attack_enemy()
-                return
-            
-            case 'APROXIMAR-SE': # Resposta ao ataque do inimigo
-                if self.beliefs['target'] is not None:
-                    if self.beliefs['target'].cell is not None:
-                        self.move_to_target(
-                            self.beliefs['target'].cell.coordinate,
-                            self.beliefs['displacement'])
-                return
-            
-            case _:
-                pass
+            match self.intention:
+                case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
+                    self.set_attacked_target()
+                    return
+                
+                case 'CONTINUAR': # Resposta ao ataque do inimigo
+                    return
+                
+                case 'ATACAR': # Resposta ao ataque do inimigo
+                    self.attack_enemy()
+                    return
+                
+                case 'APROXIMAR-SE': # Resposta ao ataque do inimigo
+                    if self.beliefs['target'] is not None:
+                        if self.beliefs['target'].cell is not None:
+                            self.move_to_target(
+                                self.beliefs['target'].cell.coordinate,
+                                self.beliefs['displacement'])
+                    return
+                
+                case _:
+                    pass
+
+    def process_message(self):
+        for message in self.inbox:
+            match message['performative']:
+                case 'ATTACK_TARGET': # Resposta ao ataque do inimigo
+                    self.receive_attack(message)
+                
+                case _:
+                    pass
+            self.inbox.remove(message)
 
     def process_message(self):
         for message in self.inbox:
