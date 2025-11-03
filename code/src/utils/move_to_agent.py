@@ -43,7 +43,14 @@ def move_to_agent(h, l, ax, ay, bx, by, max_step):
         return (new_ax, new_ay) 
 
     if distancia == 1:
-        return (ax, ay)
+        if vy != 0:
+            new_ay = ay + (1 if vy > 0 else -1)
+            new_ay = max(0, min(h-1, new_ay))
+            return (ax, new_ay)
+        elif vx != 0:
+            new_ax = ax + (1 if vx > 0 else -1)
+            new_ax = max(0, min(l-1, new_ax))
+            return (new_ax, ay)
 
     passos_desejados = distancia - 1
 

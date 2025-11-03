@@ -2,7 +2,7 @@ import random
 import uuid
 from Interfaces.IBDI_Agent import IBDI_Agent
 from communication import MessageDict
-from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
+from BDIPlanLogic.EnemyAgentPlanLogic import EnemyAgentPlanLogic
 from utils.move_to_agent import move_to_agent
 
 class Enemy_Agent(IBDI_Agent):
@@ -21,7 +21,7 @@ class Enemy_Agent(IBDI_Agent):
         self.cell = cell
         self.type = type
         self.plan_library = {
-            'SURVIVE': SurvivePlanLogic()
+            'SURVIVE': EnemyAgentPlanLogic()
         }
 
         self.inbox = []
@@ -65,10 +65,19 @@ class Enemy_Agent(IBDI_Agent):
             neighbor = self.cell.neighborhood.select_random_cell()
             while not self.move_to_target(neighbor.coordinate):
                 neighbor = self.cell.neighborhood.select_random_cell()
-        self.beliefs['hp'] += random.randint(2, 4)
+                
+        newHp = self.beliefs['hp'] + random.randint(2, 4)
+        if newHp > self.beliefs['hpMax']:
+            self.beliefs['hp'] = self.beliefs['hpMax']
+        else:
+            self.beliefs['hp'] = newHp
         
     def heal(self):
-        self.beliefs['hp'] += random.randint(5, 10)
+        newHp = self.beliefs['hp'] + random.randint(5, 10)
+        if newHp > self.beliefs['hpMax']:
+            self.beliefs['hp'] = self.beliefs['hpMax']
+        else:
+            self.beliefs['hp'] = newHp     
     
     def set_target(self, size=5):
         """
@@ -151,7 +160,6 @@ class Enemy_Agent(IBDI_Agent):
 
     def deliberate(self):
         self.intention = self.plan_library[self.desires[0]].get_intention(self)
-        self.intention = self.plan_library[self.desires[0]].get_intention(self)
 
     def execute_plan(self):
         match self.intention:            
@@ -176,16 +184,9 @@ class Enemy_Agent(IBDI_Agent):
                 self.heal()
                 return
             
-            case 'DEFINIR ALVO':
-                self.set_target()
-                return
-            
             case 'EXPLORAR':
-                self.set_target()
                 self.move_around()
-                return
-            
-            case 'ESPERAR':
+                self.set_target()
                 return
             
             case _:
@@ -207,12 +208,11 @@ class Enemy_Agent(IBDI_Agent):
             self.inbox.remove(message)
 
     def step(self):
-        print(f"Executando step do animal...")
+        print(f"Executando step do inimigo...")
         print(f'INBOX: {self.inbox}')
         self.process_message()
         self.update_desires()
         self.deliberate()
         self.execute_plan()
-        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
+        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')           
         print("-"*40)
