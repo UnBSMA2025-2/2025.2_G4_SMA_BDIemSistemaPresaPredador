@@ -20,9 +20,20 @@ def post_process(ax):
     ax.grid(True, which="both", linestyle="--", linewidth=0.5, alpha=0.5)
     ax.set_aspect("equal", adjustable="box")
 
+    # ax.scatter(
+    #     5, 3,           
+    #     marker="P",        
+    #     color="lightgreen", 
+    #     s=25,              
+    #     linewidths=1, 
+    #     zorder=10           
+    # )
+
 def propertylayer_portrayal(layer):
     if layer.name == "test layer":
         return PropertyLayerStyle(color="blue", alpha=0.8, colorbar=True)
+
+
 
 def agent_portrayal(agent):
     portrayal = None
