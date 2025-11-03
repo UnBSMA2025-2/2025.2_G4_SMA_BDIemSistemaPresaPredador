@@ -50,7 +50,7 @@ class RPGModel(mesa.Model):
 
         self.grid.add_property_layer(healing_layer)
 
-        Enemy_Agent.create_agents(
+        Mob_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,

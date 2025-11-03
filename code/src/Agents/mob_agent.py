@@ -1,11 +1,10 @@
 from communication import MessageDict
 from Interfaces.IBDI_Agent import IBDI_Agent
-from Beliefs.SurvivePlanLogic import SurvivePlanLogic
+from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
 from BDIPlanLogic.RetaliateAttackPlanLogic import RetaliateAttackPlanLogic
 from BDIPlanLogic.EnemyDesires import get_desire
 from utils.move_to_agent import move_to_agent
 import uuid
-import random
 
 class Mob_Agent(IBDI_Agent):
     """

@@ -259,9 +259,7 @@ class Character_Agent(IBDI_Agent):
             
             case 'EXPLORAR':
                 vizinho = self.cell.neighborhood.select_random_cell()
-                self.move_to_target(
-                    vizinho.coordinate,
-                    self.beliefs['displacement'])
+                self.move_to_target(vizinho.coordinate, 1)
                 return
 
             case 'APROXIMAR DO ITEM':
@@ -308,5 +306,6 @@ class Character_Agent(IBDI_Agent):
         self.deliberate()
         self.execute_plan()
         print(f'INBOX DEPOIS: {self.inbox}')
-        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
+        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}') 
+        print(f'AGENTE COM NOME [{self.beliefs["name"]}] COM VIDA [{self.beliefs["hp"]}]')      
         print("-"*40)
