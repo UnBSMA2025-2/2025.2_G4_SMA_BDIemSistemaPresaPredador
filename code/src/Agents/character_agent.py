@@ -139,7 +139,6 @@ class Character_Agent(IBDI_Agent):
                         self.beliefs['em_batalha'] = True
                         return
         
-
     def get_heal(self, message):
         '''
         Método para receber uma cura via mensagem
@@ -184,7 +183,8 @@ class Character_Agent(IBDI_Agent):
             conversation_id=message['conversation_id'])
         receiver = self.model.get_agent_by_id(
             message['sender'])
-        receiver.inbox.append(response)
+        if receiver is not None:
+            receiver.inbox.append(response)
 
         if not self.beliefs['is_alive']:
             self.remove()
@@ -216,7 +216,6 @@ class Character_Agent(IBDI_Agent):
                 return
 
             case 'APROXIMAR-SE':
-                print(self.beliefs['target'])
                 if self.beliefs['target'] is not None:
                     if self.beliefs['target'].cell is not None:
                         self.move_to_target(
@@ -280,12 +279,11 @@ class Character_Agent(IBDI_Agent):
     def step(self):
         print("-"*40)
         print(f"Executando step do personagem...")
-        # print(f'INBOX ANTES: {self.inbox}')
+        print(f'INBOX: {self.inbox}')
         self.process_message()
         self.update_desires()
         self.deliberate()
         self.execute_plan()
-        # print(f'INBOX DEPOIS: {self.inbox}')
+        print(f'INBOX DEPOIS: {self.inbox}')
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        # print(f'CRENÇAS [{self.unique_id}]: {self.beliefs}')        
         print("-"*40)
