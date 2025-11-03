@@ -134,14 +134,15 @@ class Enemy_Agent(IBDI_Agent):
         response = MessageDict(
             performative='ATTACK_RESPONSE',
             sender=self.unique_id,
-            receiver=message.unique_id,
+            receiver=message['sender'],
             content={'is_alive': self.beliefs['is_alive']},
             conversation_id=message['conversation_id']
         )
         
         receiver = self.model.get_agent_by_id(message['sender'])
         
-        receiver.inbox.append(response)
+        if receiver is not None:
+            receiver.inbox.append(response)        
         
         if not self.beliefs['is_alive']:
             self.remove()
@@ -197,11 +198,9 @@ class Enemy_Agent(IBDI_Agent):
             match message['performative']:
                 case 'ATTACK_TARGET':
                     self.receive_attack(message)
-                    return
                 
                 case 'ATTACK_RESPONSE':
                     self.attack_response(message)
-                    return
                 
                 case _:
                     pass
