@@ -114,27 +114,27 @@ class Mob_Agent(IBDI_Agent):
 
     def execute_plan(self):
             match self.intention:
-            case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
-                self.set_attacked_target()
-                return
-            
-            case 'CONTINUAR': # Resposta ao ataque do inimigo
-                return
-            
-            case 'ATACAR': # Resposta ao ataque do inimigo
-                self.attack_enemy()
-                return
-            
-            case 'APROXIMAR-SE': # Resposta ao ataque do inimigo
-                if self.beliefs['target'] is not None:
-                    if self.beliefs['target'].cell is not None:
-                        self.move_to_target(
-                            self.beliefs['target'].cell.coordinate,
-                            self.beliefs['displacement'])
-                return
-            
-            case _:
-                pass
+                case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
+                    self.set_attacked_target()
+                    return
+                
+                case 'CONTINUAR': # Resposta ao ataque do inimigo
+                    return
+                
+                case 'ATACAR': # Resposta ao ataque do inimigo
+                    self.attack_enemy()
+                    return
+                
+                case 'APROXIMAR-SE': # Resposta ao ataque do inimigo
+                    if self.beliefs['target'] is not None:
+                        if self.beliefs['target'].cell is not None:
+                            self.move_to_target(
+                                self.beliefs['target'].cell.coordinate,
+                                self.beliefs['displacement'])
+                    return
+                
+                case _:
+                    pass
 
     def process_message(self):
         for message in self.inbox:

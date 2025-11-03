@@ -1,4 +1,4 @@
-from Beliefs.beliefs_tree import (
+from BDIPlanLogic.beliefs_tree import (
     DecisionTree, 
     DecisionNode, 
     IntentionNode
