@@ -27,28 +27,35 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
 
-        healing_item_prob = 0.5 # 10% de chance de ter item de cura na célula
+        healing_item_prob = 0.05 # 5% de chance de ter item de cura em uma das células do grid
 
         layer_name = "healing_item_spot"
 
-        for cell in self.grid.all_cells.cells:
-            cell_value = 1 if self.random.random() < healing_item_prob else 0
+        healing_layer = PropertyLayer(
+            layer_name, 
+            dimensions=self.grid.dimensions, 
+            dtype=int,
+            default_value=0
+        )
 
-            setattr(cell, layer_name, cell_value)
+        for cell in self.grid.all_cells.cells:
+            cell_value = 1 if self.random.random() <= healing_item_prob else 0
+
+            x, y = cell.coordinate
+
+            healing_layer.data[x, y] = cell_value
+
 
             if not hasattr(cell, 'beliefs'):
                 cell.beliefs = {}
             cell.beliefs['healing_item_spot'] = (cell_value == 1)
-        
-        
-        self.healing_cells = [
-            (cell.coordinate, cell.beliefs.get('healing_item_spot', False))
-            for cell in self.grid.all_cells.cells
-        ]
 
-        healing_layer = PropertyLayer(layer_name, dimensions=self.grid.dimensions)
+            setattr(cell, layer_name, cell_value)
 
         self.grid.add_property_layer(healing_layer)
+
+        # Referência para que os agentes possam acessar a camada de cura
+        self.healing_layer = healing_layer
 
         Mob_Agent.create_agents(
             model=self,
