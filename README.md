@@ -1,16 +1,4 @@
-# RepositorioTemplate
-Esse repositório é para ser utilizado pelos grupos como um template inicial, da home page do Projeto.
-As seções do Template NÃO DEVEM SER OMITIDAS, sendo TODAS RELEVANTES.
-
-**!! *Atenção: Renomeie o seu repositório para (Ano.Semestre)_(Grupo)_SMA_(NomeDaFrenteDePesquisa)*. !!** 
-
-**!! *Não coloque os nomes dos alunos no título do repositório*. !!**
-
-**!! *Exemplo de título correto: 2025.2_G1_SMA_ProjetoComportamentoEmergente*. !!**
- 
- (Apague esses comentários)
-
-# NomeDoProjeto
+# Simulador de RPG com Agentes BDI
 
 **Disciplina**: FGA0053 - Sistemas Multiagentes <br>
 **Nro do Grupo (de acordo com a Planilha de Divisão dos Grupos)**: 04<br>
@@ -28,6 +16,41 @@ As seções do Template NÃO DEVEM SER OMITIDAS, sendo TODAS RELEVANTES.
 Descreva o seu projeto em linhas gerais. 
 Use referências, links, que permitam conhecer um pouco mais sobre o projeto.
 Capriche nessa seção, pois ela é a primeira a ser lida pelos interessados no projeto.
+
+O nosso projeto simula um mundo de RPG (Role-Playing Game) simples utilizando a arquitetura de Sistemas Multiagentes (MAS) e o framework MESA em Python. O objetivo principal não é criar um jogo, mas sim modelar o comportamento emergente de agentes inteligentes num ambiente de mundo aberto.
+
+O núcleo do nosso sistema é a implementação do modelo de agência **BDI (Belief-Desire-Intention)**:
+
+## Modelo BDI
+
+### Agentes
+O mundo é populado por Character_Agent (os heróis, controlados pelo BDI), Mob_Agent e Enemy_Agent (os inimigos que atacam os heróis).
+
+### Crenças (Beliefs) 
+Os agentes têm uma percepção limitada do mundo. Eles "sabem" informações como o seu nome, HP, se há inimigos próximos, se há itens de cura próximos, e (no caso dos Character_Agent) mantêm uma "memória" de células recentemente visitadas.
+
+### Desejos (Desires) 
+
+O comportamento do agente é guiado por uma hierarquia de desejos. Usamos um arquivo `CharacterDesires.py` que serve como "Maestro" que decide a prioridade do agente a cada passo:
+
+1. **'SURVIVE'** (Sobreviver): Desejo ativado se o HP estiver baixo.
+
+2. **'BATTLE'** (Batalhar): Desejo ativado se o HP estiver OK e houver inimigos próximos.
+
+3. **'EXPLORE'** (Explorar): O desejo padrão se o agente estiver seguro e saudável.
+
+4. **Futuros Desejos/Desires a serem desenvolvidos**: Descrição
+
+### Intenções (Intentions)
+
+Com base no Desejo ativo, o agente consulta uma "Biblioteca de Planos" (plan_library) e seleciona um plano de ação detalhado para executar suas ações e intenções em cada passo da simulação.
+
+### Planos
+
+Estes planos são implementados como Árvores de Decisão que geram ações concretas (Intenções) como ATACAR INIMIGO, APROXIMAR DO ITEM ou EXPLORAR (que usa a nossa lógica de "exploração inteligente" para evitar repetições).
+
+### Objetivos
+A simulação permite-nos observar como estes agentes BDI autônomos gerenciam as suas prioridades e interagem com o o mundo, com outros agentes, com os itens e entre si.
 
 ## Screenshots
 Adicione 2 ou mais screenshots do projeto em termos de interface e/ou funcionamento.
@@ -60,10 +83,59 @@ Se quiser limpar o ambiente, e reiniciar novamente, pode fazer por meio do coman
 make clean
 ```
 
+### Instalação Manual (Windows/macOS/Linux)
+Recomendamos a criação de um ficheiro requirements.txt com as seguintes dependências:
+
+    mesa
+    solara
+    numpy
+    pandas
+    seaborn
+    matplotlib
+
+1. Crie o ambiente virtual:
+        
+```
+python3 -m venv .venv
+```
+
+2. Ative o ambiente:
+* No Linux/macOS: `source .venev/bin/activate`
+* No Windows: `.venv\Scripts\activate`
+
+3. Instale as dependências:
+
+```
+pip install -r requirements.txt
+```
+
+4. Execute o servidor:
+```
+solara run src/main.py
+```
+O servidor estará disponível em http://localhost:8765 (ou na porta que o Solara indicar).
+
 ## Uso 
-Explique como usar seu projeto.
-Procure ilustrar em passos, com apoio de telas do software, seja com base na interface gráfica, seja com base no terminal.
-Nessa seção, deve-se revelar de forma clara sobre o funcionamento do software.
+
+Após executar `make run` ou `solara run src/main.py` e abrir o seu navegador (ex: `http://localhost:8765`):
+
+1.  **Interface Principal:** Você verá a interface do SolaraViz.
+    * **À Esquerda (Painel de Controlo):** Aqui pode iniciar (`PLAY`), pausar, avançar passo-a-passo (`STEP`) ou reiniciar (`RESET`) a simulação. Pode também ajustar os `Model Parameters` (como o número de agentes) antes de clicar em `RESET`.
+    * **À Direita (Visualização):** O grid que mostra a simulação.
+        * **Agentes Pretos:** São os `Character_Agent` (controlados pelo BDI).
+        * **Agentes Vermelhos:** São os `Mob_Agent` (inimigos).
+        * Células Verdes: são os `healing_item_spot` que representam um item de cura na qual os agentes podem adquirir para aumentar o número de curas disponíveis.
+
+2.  **Observando o Comportamento:**
+    * Clique em `PLAY` para deixar a simulação correr ou `STEP` para analisar passo a passo.
+    * **Observe o seu Terminal:** O *log* do terminal é a parte mais importante. Ele mostra a "mente" de cada agente BDI.
+    * Você verá os agentes `Character_Agent` a executar o seu ciclo BDI e a declarar as suas intenções a cada passo:
+        ```log
+        INTENÇÃO [4]: EXPLORAR
+        PLANO EM ANDAMENTO [4]: EXPLORE
+        ```
+    * Quando um agente (no seu modo `EXPLORE`) se aproxima de um inimigo, o seu `get_desire` mudará o plano para `BATTLE`.
+    * Quando um agente (no seu modo `EXPLORE`) se aproxima de um item, a sua intenção mudará para `APROXIMAR DO ITEM` e depois `ADQUIRIR ITEM`.
 
 ## Vídeo
 Adicione 1 ou mais vídeos com a execução do projeto.
@@ -79,7 +151,10 @@ TEMPO: +/- 15min
 Apresente, brevemente, como cada membro do grupo contribuiu para o projeto.
 |Nome do Membro | Contribuição | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios (ex. links para commits)
 | -- | -- | -- | -- |
-| Fulano  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
+| Pedro Henrique da Silva Melo  |  Programação do modelo BDI para exploração dos agentes, criação das células com itens de cura, pesquisa científica para artigos voltados para sistemas multi-agentes comportamentais | Boa | [Commit **7fa3398**](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/commit/7fa33968e259d82f9fd1f9f20ba99e62e8e5f695)
+| 	Marllon Fausto Cardoso  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
+| João Pedro Rodrigues Morbeck |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
+| Thiago Cerqueira Borges  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
 
 ## Outros 
 Quaisquer outras informações sobre o projeto podem ser descritas aqui. Não esqueça, entretanto, de informar sobre:
@@ -88,6 +163,30 @@ Quaisquer outras informações sobre o projeto podem ser descritas aqui. Não es
 (iii) Contribuições e Fragilidades, e
 (iV) Trabalhos Futuros.
 
+## Outros
+
+Aqui estão algumas das nossas perceções e lições aprendidas durante o desenvolvimento do projeto:
+
+* **(i) Lições Aprendidas:**
+    * lorem ipsum
+
+* **(ii) Percepções:**
+    * O MESA é excelente para modelação, mas a sua API de visualização está em transição (o antigo `ModularServer` vs. o novo `SolaraViz`).
+    * A abordagem de visualização com `SpaceRenderer(backend="matplotlib")` é funcional para depuração, mas é estática (gera uma nova imagem a cada passo) e não permite a renderização dinâmica.
+
+* **(iii) Contribuições e Fragilidades:**
+    * **Contribuições:** Conseguimos implementar um ciclo BDI hierárquico completo. A nossa lógica de "Exploração Inteligente" com memória (`visited_cells` e `exploration_cooldown`) é uma contribuição robusta que impede comportamentos repetitivos e oscilações, forçando o agente a explorar novas áreas.
+
+* **(iv) Trabalhos Futuros:**
+    * **Expandir o BDI:** Implementar os diferentes planos de "Procurar Cura" por classe (Guerreiro, Mago, Caçador) que desenhámos na nossa árvore de exploração, mas que ainda não estão implementados.
+
 ## Fontes
-Referencie, adequadamente, as referências utilizadas.
-Indique ainda sobre fontes de leitura complementares.
+
+* **MESA Framework:** A documentação oficial do MESA, usada como referência principal para a API do modelo e do grid.
+    * Disponível em: [https://mesa.readthedocs.io/](https://mesa.readthedocs.io/)
+* **Solara:** A biblioteca usada pelo MESA 3.x para a visualização web.
+    * Disponível em: [https://solara.dev/](https://solara.dev/)
+* **Arquitetura BDI (Referência Teórica):**
+    * Rao, A. S., & Georgeff, M. P. (1995). BDI agents: from theory to practice. *Proceedings of the first international conference on Multi-agent systems*.
+* **Tutorial MESA (Boltzmann Wealth Model):** O tutorial de visualização do MESA que usámos como base para a integração com o `SolaraViz` e `SpaceRenderer`.
+    * Disponível na documentação oficial do MESA.
