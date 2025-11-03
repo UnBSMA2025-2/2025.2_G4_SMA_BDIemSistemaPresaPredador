@@ -151,6 +151,7 @@ class Enemy_Agent(IBDI_Agent):
 
     def deliberate(self):
         self.intention = self.plan_library[self.desires[0]].get_intention(self)
+        self.intention = self.plan_library[self.desires[0]].get_intention(self)
 
     def execute_plan(self):
         match self.intention:            
