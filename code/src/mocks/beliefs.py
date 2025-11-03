@@ -13,13 +13,14 @@ beliefs1 = {
     'em_batalha': True,
     'hp_agente_alvo': 40,
     'num_healing': 2,
+    'healing_item_spot': None,
     'target': None,
 }
 
 # caso onde o agente fica vários steps se curando
 beliefs2 = {
-    'name': 'Lucas',
-    'hp': 1,
+    'name': 'Malbecky',
+    'hp': 2000,
     'hpMax': 2000,
     'is_alive': True,
     'def': 10,
@@ -31,7 +32,9 @@ beliefs2 = {
     'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 20,
+    'healing_item_spot': None,
     'target': None,
+    'color': 'blue',
 }
 
 # caso onde o agente com pouca vida está fora de combate e espera ou tem um amigo ao lado
@@ -49,25 +52,28 @@ beliefs3 = {
     'em_batalha': False,
     'hp_agente_alvo': 9,
     'num_healing': 0,
+    'healing_item_spot': None,
     'target': None,
 }
 
 
 beliefs4 = {
     'name': 'Lucas',
-    'hp': 5,
+    'hp': 65,
     'hpMax': 65,
     'is_alive': True,
     'def': 10,
     'atk': 25,
     'classe': 'GUERREIRO',
-    'range': 4,
+    'range': 0,
     'iniciativa': 14,
     'displacement': 1,
     'em_batalha': False,
     'hp_agente_alvo': 9,
-    'num_healing': 20,
+    'num_healing': 0,
+    'healing_item_spot': None,
     'target': None,
+    'color': 'black'
 }
 
 enemy_beliefs1 = {
