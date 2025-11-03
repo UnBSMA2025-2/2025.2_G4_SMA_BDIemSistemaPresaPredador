@@ -61,7 +61,7 @@ beliefs4 = {
     'def': 10,
     'atk': 25,
     'classe': 'GUERREIRO',
-    'range': 1,
+    'range': 4,
     'iniciativa': 14,
     'displacement': 1,
     'em_batalha': False,
