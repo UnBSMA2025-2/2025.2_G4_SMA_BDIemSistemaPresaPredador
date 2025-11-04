@@ -52,8 +52,13 @@ Estes planos são implementados como Árvores de Decisão que geram ações conc
 ### Objetivos
 A simulação permite-nos observar como estes agentes BDI autônomos gerenciam as suas prioridades e interagem com o o mundo, com outros agentes, com os itens e entre si.
 
+## Vídeo
+[Clique aqui!](https://www.youtube.com/watch?v=MZNgeq5jD30)
+
 ## Screenshots
-Adicione 2 ou mais screenshots do projeto em termos de interface e/ou funcionamento.
+![Captura de tela de 2025-11-04 08-24-08](https://hackmd.io/_uploads/HJftzvDyZg.png)
+![Captura de tela de 2025-11-04 08-27-22](https://hackmd.io/_uploads/ryHVmPwJZe.png)
+
 
 ## Instalação 
 **Linguagens**: Python<br>
@@ -137,47 +142,27 @@ Após executar `make run` ou `solara run src/main.py` e abrir o seu navegador (e
     * Quando um agente (no seu modo `EXPLORE`) se aproxima de um inimigo, o seu `get_desire` mudará o plano para `BATTLE`.
     * Quando um agente (no seu modo `EXPLORE`) se aproxima de um item, a sua intenção mudará para `APROXIMAR DO ITEM` e depois `ADQUIRIR ITEM`.
 
-## Vídeo
-Adicione 1 ou mais vídeos com a execução do projeto.
-Procure: 
-(i) Introduzir o projeto;
-(ii) Mostrar passo a passo o código, explicando-o, e deixando claro o que é de terceiros, e o que é contribuição real da equipe;
-(iii) Apresentar particularidades do Paradigma, da Linguagem, e das Tecnologias, e
-(iV) Apresentar lições aprendidas, contribuições, pendências, e ideias para trabalhos futuros.
-OBS: TODOS DEVEM PARTICIPAR, CONFERINDO PONTOS DE VISTA.
-TEMPO: +/- 15min
-
 ## Participações
 Apresente, brevemente, como cada membro do grupo contribuiu para o projeto.
 |Nome do Membro | Contribuição | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios (ex. links para commits)
 | -- | -- | -- | -- |
 | Pedro Henrique da Silva Melo  |  Programação do modelo BDI para exploração dos agentes, criação das células com itens de cura, pesquisa científica para artigos voltados para sistemas multi-agentes comportamentais | Boa | [Commit **7fa3398**](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/commit/7fa33968e259d82f9fd1f9f20ba99e62e8e5f695)
-| 	Marllon Fausto Cardoso  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
+| 	Marllon Fausto Cardoso  | Idealização e implementação da base lógica dos agentes BDI e sua comunicação: <br>1. Implementação das classes da árvore de decisão (estrutura e nós);<br>2. Implementação da árvore de decisão de Sobrevivência do character_agent;<br>3. Implementação da árvore de decisão de Combate do character_agent e seus métodos de ação;<br>4. Implementação da árvore de decisão de Reação a Ataques do mob_agent e seus métodos de ação;<br> 5. Implementação da interface IBDI_Agent que estabelece o contrato da lógica BDI para todos os agentes do modelo;<br>6. Implementação da lóica de troca de mensagens entre os agentes do modelo;   | Boa | [Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/1)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/2)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/3)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/4/commits)<br>
 | João Pedro Rodrigues Morbeck |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
 | Thiago Cerqueira Borges  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
-
-## Outros 
-Quaisquer outras informações sobre o projeto podem ser descritas aqui. Não esqueça, entretanto, de informar sobre:
-(i) Lições Aprendidas;
-(ii) Percepções;
-(iii) Contribuições e Fragilidades, e
-(iV) Trabalhos Futuros.
 
 ## Outros
 
 Aqui estão algumas das nossas perceções e lições aprendidas durante o desenvolvimento do projeto:
 
-* **(i) Lições Aprendidas:**
-    * lorem ipsum
-
-* **(ii) Percepções:**
+* **(i) Percepções:**
     * O MESA é excelente para modelação, mas a sua API de visualização está em transição (o antigo `ModularServer` vs. o novo `SolaraViz`).
     * A abordagem de visualização com `SpaceRenderer(backend="matplotlib")` é funcional para depuração, mas é estática (gera uma nova imagem a cada passo) e não permite a renderização dinâmica.
 
-* **(iii) Contribuições e Fragilidades:**
+* **(ii) Contribuições e Fragilidades:**
     * **Contribuições:** Conseguimos implementar um ciclo BDI hierárquico completo. A nossa lógica de "Exploração Inteligente" com memória (`visited_cells` e `exploration_cooldown`) é uma contribuição robusta que impede comportamentos repetitivos e oscilações, forçando o agente a explorar novas áreas.
 
-* **(iv) Trabalhos Futuros:**
+* **(iii) Trabalhos Futuros:**
     * **Expandir o BDI:** Implementar os diferentes planos de "Procurar Cura" por classe (Guerreiro, Mago, Caçador) que desenhámos na nossa árvore de exploração, mas que ainda não estão implementados.
 
 ## Fontes
