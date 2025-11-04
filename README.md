@@ -56,8 +56,8 @@ A simulação permite-nos observar como estes agentes BDI autônomos gerenciam a
 [Clique aqui!](https://www.youtube.com/watch?v=MZNgeq5jD30)
 
 ## Screenshots
-![Captura de tela de 2025-11-04 08-24-08](https://hackmd.io/_uploads/HJftzvDyZg.png)
-![Captura de tela de 2025-11-04 08-27-22](https://hackmd.io/_uploads/ryHVmPwJZe.png)
+![Captura de tela de 2025-11-04 08-24-08](https://drive.google.com/file/d/13q0rm-udvfWCABHmJJG0qRPkS_KDEKFS/view?usp=sharing)<br>
+![Captura de tela de 2025-11-04 08-27-22](https://drive.google.com/file/d/1G0NofoJ6uaz8TJjUcFYwW2nGaxjn94t6/view?usp=sharing)
 
 
 ## Instalação 
