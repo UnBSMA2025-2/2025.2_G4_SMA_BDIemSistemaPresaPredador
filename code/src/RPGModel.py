@@ -5,9 +5,6 @@ from mesa.discrete_space.property_layer import PropertyLayer
 from Agents.character_agent import Character_Agent 
 from Agents.mob_agent import Mob_Agent 
 from mocks.beliefs import (
-    beliefs1, 
-    beliefs2, 
-    beliefs3,
     beliefs4,
     enemy_beliefs1)
 

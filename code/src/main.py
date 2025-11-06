@@ -2,14 +2,11 @@ from components.agents_info import AgentInfo
 from RPGModel import RPGModel
 from mesa.visualization import (
     SolaraViz, 
-    SpaceRenderer, 
-    make_plot_component, 
-    make_space_component
+    SpaceRenderer 
     )
 from mesa.visualization.components import (
     AgentPortrayalStyle, PropertyLayerStyle
     )
-import solara
 
 
 def post_process(ax):
@@ -19,15 +16,6 @@ def post_process(ax):
     ax.set_ylabel("Altura")
     ax.grid(True, which="both", linestyle="--", linewidth=0.5, alpha=0.5)
     ax.set_aspect("equal", adjustable="box")
-
-    # ax.scatter(
-    #     5, 3,           
-    #     marker="P",        
-    #     color="lightgreen", 
-    #     s=25,              
-    #     linewidths=1, 
-    #     zorder=10           
-    # )
 
 def propertylayer_portrayal(layer):
     """
@@ -62,8 +50,8 @@ model_params = {
         "max": 100,
         "step": 1,
     },
-    "width": 40,   # <--- MUDADO (seu valor inicial era 40)
-    "height": 20,  # <--- MUDADO (seu valor inicial era 20)
+    "width": 40,  
+    "height": 20,
 }
 
 if __name__ == "__main__":
@@ -85,7 +73,6 @@ if __name__ == "__main__":
         model_params=model_params,
         name="RPG Model",
     )
-    # This is required to render the visualization in the Jupyter notebook
 
     page
 

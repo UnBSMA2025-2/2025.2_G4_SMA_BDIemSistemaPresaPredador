@@ -58,7 +58,7 @@ beliefs3 = {
 
 
 beliefs4 = {
-    'name': 'Lucas',
+    'name': 'Guerreiro',
     'hp': 65,
     'hpMax': 65,
     'is_alive': True,
@@ -81,8 +81,8 @@ enemy_beliefs1 = {
     'hp': 65,
     'hpMax': 65,
     'is_alive': True,
-    'def': 10,
-    'atk': 5,
+    'def': 20,
+    'atk': 15,
     'range': 2,
     'iniciativa': 14,
     'displacement': 2,

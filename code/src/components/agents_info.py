@@ -1,7 +1,6 @@
 import solara
 import os
 import threading
-from RPGModel import RPGModel
 
 AVATAR_PLACEHOLDER = "/assets/coelho.jpg"
 BASE_DIR = os.path.dirname(__file__)
