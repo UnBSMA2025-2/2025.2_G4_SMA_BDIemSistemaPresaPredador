@@ -24,8 +24,8 @@ def cond_there_are_enemies_nearby(agent):
     return False
 
 def get_desire(agent):
-    if cond_low_life(agent=agent):
-        return 'SURVIVE'
-    elif cond_there_are_enemies_nearby(agent=agent):
-        return 'BATTLE'
+    # if cond_low_life(agent=agent):
+    #     return 'SURVIVE'
+    # elif cond_there_are_enemies_nearby(agent=agent):
+    #     return 'BATTLE'
     return 'EXPLORE'

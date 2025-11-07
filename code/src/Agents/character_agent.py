@@ -249,7 +249,7 @@ class Character_Agent(IBDI_Agent):
             case 'EXPLORAR':
                 best_cell = self._select_smart_exploration_cell()
                 if best_cell:
-                    print(f'AGENTE [{self.unique_id}] explorando (inteligente) para: {best_cell.coordinate}')
+                    # print(f'AGENTE [{self.unique_id}] explorando (inteligente) para: {best_cell.coordinate}')
                     self.move_to_target(best_cell.coordinate, self.beliefs['displacement'])
                 else:
                     print(f'AGENTE [{self.unique_id}] está preso. Intenção: ESPERAR.')
@@ -265,7 +265,7 @@ class Character_Agent(IBDI_Agent):
                         healing_layer = self.model.healing_layer
                         pos = self.cell.coordinate
                         healing_layer.data[pos] = 0
-                        print(f"AGENTE [{self.unique_id}] adquiriu item em {pos}.")
+                        # print(f"AGENTE [{self.unique_id}] adquiriu item em {pos}.")
                     except (KeyError, AttributeError) as e:
                         print(f"AVISO [{self.unique_id}]: Falha ao atualizar camada de cura. Erro: {e}")
                 else:
@@ -299,10 +299,11 @@ class Character_Agent(IBDI_Agent):
         if self.beliefs.get('target') is None or not getattr(self.beliefs['target'], 'beliefs', {}).get('is_alive', True):
             self.beliefs['em_batalha'] = False
 
-        print(f'INBOX DEPOIS: {self.inbox}')
+        # print(f'INBOX DEPOIS: {self.inbox}')
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')
         print(f'PLANO [{self.unique_id}]: {self.desires[0]}')
-        print(f'[{self.beliefs["name"]}] HP: {self.beliefs["hp"]}')
+        # print(f'[{self.beliefs["name"]}] HP: {self.beliefs["hp"]}')
         print(f'Itens de cura: {self.beliefs["num_healing"]}')
         print(f'Em batalha: {self.beliefs["em_batalha"]}')
         print("-" * 40)
+
