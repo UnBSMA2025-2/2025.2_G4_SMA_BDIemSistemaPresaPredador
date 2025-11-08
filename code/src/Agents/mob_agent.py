@@ -4,6 +4,7 @@ from BDIPlanLogic.RetaliateAttackPlanLogic import RetaliateAttackPlanLogic
 from BDIPlanLogic.EnemyDesires import get_desire
 from utils.move_to_agent import move_to_agent
 import uuid
+import copy
 
 class Mob_Agent(IBDI_Agent):
     """
@@ -17,12 +18,12 @@ class Mob_Agent(IBDI_Agent):
         super().__init__(model)
         self.cell = cell
         self.type = type
-
+        self.visited_cells = {}
         self.plan_library = {
             'REACT': RetaliateAttackPlanLogic()
             }        
         self.inbox = []
-        self.beliefs = beliefs
+        self.beliefs = copy.deepcopy(beliefs)
         self.desires = ['']
         self.intention = None
 
@@ -102,6 +103,39 @@ class Mob_Agent(IBDI_Agent):
 
             print(self.beliefs['target'])
 
+    def _select_smart_exploration_cell(self):
+        neighbors = self.cell.neighborhood.cells
+        empty_neighbors = [cell for cell in neighbors if cell.is_empty]
+
+        if not empty_neighbors:
+            return None
+
+        unvisited_cells = [cell for cell in empty_neighbors if cell.coordinate not in self.visited_cells]
+        if unvisited_cells:
+            return self.random.choice(unvisited_cells)
+
+        oldest_cell = None
+        min_last_visit_step = -1
+
+        for cell in empty_neighbors:
+            last_visit_step = self.visited_cells.get(cell.coordinate, 0)
+            if (self.model.steps - last_visit_step) > self.exploration_cooldown:
+                if oldest_cell is None or last_visit_step < min_last_visit_step:
+                    min_last_visit_step = last_visit_step
+                    oldest_cell = cell
+
+        if oldest_cell:
+            return oldest_cell
+        return self.random.choice(empty_neighbors)
+
+    def explore(self):
+        best_cell = self._select_smart_exploration_cell()
+        if best_cell:
+            # print(f'AGENTE [{self.unique_id}] explorando (inteligente) para: {best_cell.coordinate}')
+            self.move_to_target(best_cell.coordinate, self.beliefs['displacement'])
+        else:
+            print(f'AGENTE [{self.unique_id}] está preso. Intenção: ESPERAR.')
+
     def update_desires(self):
         self.desires[0] = get_desire(self)
         pass
@@ -116,7 +150,8 @@ class Mob_Agent(IBDI_Agent):
                     self.set_attacked_target()
                     return
                 
-                case 'CONTINUAR': # Resposta ao ataque do inimigo
+                case 'MOVER-SE': # Resposta ao ataque do inimigo
+                    self.explore()
                     return
                 
                 case 'ATACAR': # Resposta ao ataque do inimigo
@@ -129,6 +164,9 @@ class Mob_Agent(IBDI_Agent):
                             self.move_to_target(
                                 self.beliefs['target'].cell.coordinate,
                                 self.beliefs['displacement'])
+                            return
+                        
+                    self.explore()
                     return
                 
                 case _:
@@ -155,6 +193,7 @@ class Mob_Agent(IBDI_Agent):
             self.inbox.remove(message)
 
     def step(self):
+
         print("-"*40)
         print(f"Executando step do animal...")
         print(f'INBOX: {self.inbox}')
@@ -163,5 +202,5 @@ class Mob_Agent(IBDI_Agent):
         self.deliberate()
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
-        print(f'VIDA [{self.unique_id}]: {self.beliefs['hp']}')        
+        print(f'CÉLULA [{self.unique_id}]: {self.cell}')        
         print("-"*40)

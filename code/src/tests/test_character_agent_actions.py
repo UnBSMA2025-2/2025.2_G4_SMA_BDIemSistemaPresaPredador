@@ -1138,6 +1138,7 @@ def test_process_message_dispatches_para_metodo_correto(mock_messaging_agent, pe
     
     assert len(agent.inbox) == 0 
 
+
 def test_process_message_lida_com_multiplas_mensagens(mock_messaging_agent):
     """
     Testa se o loop 'for' processa todas as mensagens na inbox.
@@ -1155,6 +1156,7 @@ def test_process_message_lida_com_multiplas_mensagens(mock_messaging_agent):
     agent.send_heal.assert_called_once_with(msg2)
     
     assert len(agent.inbox) == 0
+
 
 def test_process_message_ignora_performative_desconhecido(mock_messaging_agent):
     """
@@ -1175,4 +1177,3 @@ def test_process_message_ignora_performative_desconhecido(mock_messaging_agent):
     
     assert len(agent.inbox) == 0 
 
-    

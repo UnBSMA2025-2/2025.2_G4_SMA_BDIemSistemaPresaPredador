@@ -3,10 +3,11 @@ from utils.move_to_agent import move_to_agent
 from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
 from BDIPlanLogic.BattlePlanLogic import BattlePlanLogic
 from BDIPlanLogic.ExplorationPlanLogic import ExplorationPlanLogic
-import random
 from communication import MessageDict
-import uuid
 from BDIPlanLogic.CharacterDesires import get_desire
+import uuid
+import random
+import copy
 
 
 class Character_Agent(IBDI_Agent):
@@ -23,7 +24,7 @@ class Character_Agent(IBDI_Agent):
             'EXPLORE': ExplorationPlanLogic(),
         }
         self.inbox = []
-        self.beliefs = beliefs
+        self.beliefs = copy.deepcopy(beliefs)
         self.desires = ['']
         self.intention = None
         self.visited_cells = {}
@@ -31,13 +32,16 @@ class Character_Agent(IBDI_Agent):
 
     # ---------------------- INTERAÇÃO ENTRE AGENTES ---------------------- #
     def get_friends(self):
-        vizinhos = self.cell.get_neighborhood(
-            self.beliefs['displacement'])
-        cell_agentes_amigos = vizinhos.select(
-            lambda cell: not cell.is_empty and next(iter(cell.agents)).type == 'CHARACTER').cells
-        return cell_agentes_amigos
+        if self.cell is not None:
+            vizinhos = self.cell.get_neighborhood(
+                self.beliefs['displacement'])
+            cell_agentes_amigos = vizinhos.select(
+                lambda cell: not cell.is_empty and next(iter(cell.agents)).type == 'CHARACTER').cells
+            return cell_agentes_amigos
 
     def move_to_target(self, target_coordinate, displacement):
+        if not self.cell: self.explore()
+
         h = self.model.grid.height
         l = self.model.grid.width
         pos_a = self.cell.coordinate
@@ -88,6 +92,14 @@ class Character_Agent(IBDI_Agent):
             return oldest_cell
         return self.random.choice(empty_neighbors)
 
+    def explore(self):
+        best_cell = self._select_smart_exploration_cell()
+        if best_cell:
+            # print(f'AGENTE [{self.unique_id}] explorando (inteligente) para: {best_cell.coordinate}')
+            self.move_to_target(best_cell.coordinate, self.beliefs['displacement'])
+        else:
+            print(f'AGENTE [{self.unique_id}] está preso. Intenção: ESPERAR.')
+
     # ---------------------- COMBATE ---------------------- #
     def attack_enemy(self):
         enemyAgent = self.beliefs.get('target')
@@ -133,15 +145,19 @@ class Character_Agent(IBDI_Agent):
                 return
 
     def escape(self):
-        vizinho = self.cell.neighborhood.select_random_cell()
-        self.move_to_target(vizinho.coordinate, 1)
+        if self.cell is not None:
+            vizinho = self.cell.neighborhood.select_random_cell()
+            self.move_to_target(vizinho.coordinate, 1)
 
     # ---------------------- DEFINIÇÃO DE ALVOS ---------------------- #
     def set_target(self):
-        vizinhos = self.cell.neighborhood.cells
+        vizinhos = self.cell.get_neighborhood(self.beliefs['displacement']).cells
         for cell in vizinhos:
             if len(cell.agents) != 0 and cell.agents[0].type != 'CHARACTER':
-                self.beliefs['target'] = cell.agents[0]
+                enemy_id = cell.agents[0].unique_id
+                enemy = self.model.get_agent_by_id(enemy_id)
+                self.beliefs['target'] = enemy
+                self.beliefs['target'].cell = enemy.cell
                 self.beliefs['em_batalha'] = True  # ✅ Entrou em batalha
                 return
 
@@ -221,15 +237,23 @@ class Character_Agent(IBDI_Agent):
         match self.intention:
             case 'CURAR':
                 self.heal()
+                return
             case 'ATACAR INIMIGO':
                 self.attack_enemy()
+                return
             case 'APROXIMAR-SE':
+                print(f':\n----> {self.beliefs['target'].unique_id}')
+                enemy = self.model.get_agent_by_id(self.beliefs['target'].unique_id)
+                print(f'APROXIMAR-SE:\n----> {enemy}')
+               
                 if self.beliefs['target'] and self.beliefs['target'].cell:
                     self.move_to_target(
-                        self.beliefs['target'].cell.coordinate,
+                        enemy.cell.coordinate,
                         self.beliefs['displacement'])
+                return
             case 'FUGIR':
                 self.escape()
+                return
             case 'APROXIMAR-SE DE AMIGO':
                 for cell in self.get_friends():
                     if not cell.agents[0].beliefs['em_batalha']:
@@ -238,24 +262,23 @@ class Character_Agent(IBDI_Agent):
                         return
             case 'OBTER CURA':
                 self.request_heal()
-            case 'ESPERAR':
                 return
             case 'DEFINIR ALVO':
                 self.set_target()
+                return
             case 'DEFINIR ALVO DO AMIGO':
                 self.set_friends_target()
+                return
             case 'DEFINIR OUTRO ALVO':
                 self.set_other_target()
+                return
             case 'EXPLORAR':
-                best_cell = self._select_smart_exploration_cell()
-                if best_cell:
-                    # print(f'AGENTE [{self.unique_id}] explorando (inteligente) para: {best_cell.coordinate}')
-                    self.move_to_target(best_cell.coordinate, self.beliefs['displacement'])
-                else:
-                    print(f'AGENTE [{self.unique_id}] está preso. Intenção: ESPERAR.')
+                self.explore()
+                return
             case 'APROXIMAR DO ITEM':
                 item_pos = self.beliefs['healing_item_spot']
                 self.move_to_target(item_pos, self.beliefs['displacement'])
+                return
             case 'ADQUIRIR ITEM':
                 if self.cell.beliefs.get('healing_item_spot', False):
                     self.beliefs['num_healing'] += 1
@@ -270,6 +293,7 @@ class Character_Agent(IBDI_Agent):
                         print(f"AVISO [{self.unique_id}]: Falha ao atualizar camada de cura. Erro: {e}")
                 else:
                     print(f"AVISO [{self.unique_id}]: célula sem item de cura.")
+                return
             case _:
                 pass
 

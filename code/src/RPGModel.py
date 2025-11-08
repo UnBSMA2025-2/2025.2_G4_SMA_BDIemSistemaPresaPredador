@@ -6,7 +6,8 @@ from Agents.character_agent import Character_Agent
 from Agents.mob_agent import Mob_Agent 
 from mocks.beliefs import (
     beliefs4,
-    enemy_beliefs1)
+    enemy_beliefs1,
+    boss_beliefs)
 
 class RPGModel(mesa.Model):
     """
@@ -18,13 +19,15 @@ class RPGModel(mesa.Model):
         Inicializa o modelo, o scheduler e cria o agente único.
         """
         super().__init__(seed=seed)
-        self.message_box = {}
         self.num_agents = n
+        
         self.grid = OrthogonalMooreGrid(
             (width, height), torus=True, capacity=1, random=self.random
         )
 
-        healing_item_prob = 0.05 # 5% de chance de ter item de cura em uma das células do grid
+        self.waves = 0
+
+        healing_item_prob = 0.035 # 5% de chance de ter item de cura em uma das células do grid
 
         layer_name = "healing_item_spot"
 
@@ -60,19 +63,13 @@ class RPGModel(mesa.Model):
             n=self.num_agents,
             beliefs=enemy_beliefs1
         )
-        # Character_Agent.create_agents(
-        #     model=self,
-        #     cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
-        #     n=self.num_agents,
-        #     beliefs=beliefs1,
-        #     type='ENEMY
-        # )
         Character_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
             beliefs=beliefs4
         )
+
 
     def get_agent_by_id(self, agent_id):
         try:
@@ -82,12 +79,37 @@ class RPGModel(mesa.Model):
         except:
             return None
 
+
+    def get_invalid_cells(self):
+        character_agents = self.agents.select(
+            lambda agent: agent.type == 'CHARACTER')
+        
+        celulas_invalidas = []
+
+        for agent in character_agents:
+            vizinhos = agent.cell.get_neighborhood(
+                agent.beliefs['vision']).cells
+            celulas_invalidas += vizinhos
+
+        print(f'character_agents: {celulas_invalidas}')
+        return set(celulas_invalidas)
+
+
     def step(self):
         print("\n" + "="*40)
         print(f"--- Início do Passo {self.steps} da Simulação ---")
 
-        self.message_box = {}
+        all_agents = list(self.agents)
+
+        sorted_agents = sorted(
+            all_agents,
+            key=lambda agent: agent.beliefs.get('iniciativa', 0),
+            reverse=True
+        )
         
-        self.agents.shuffle_do("step")
+        for agent in sorted_agents:            
+            if hasattr(agent, 'alive') and not agent.alive:
+                continue
+            agent.step()
         
         print("="*40)
