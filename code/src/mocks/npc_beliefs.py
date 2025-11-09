@@ -25,3 +25,17 @@ slime_beliefs = {
     'num_healing': 0,
     'target': None
 }
+
+hog_beliefs = {
+    'name': 'Hog',
+    'hp': 100,
+    'hpMax': 100,
+    'is_alive': True,
+    'def': 10,
+    'atk': 0,
+    'classe': 'NPC',
+    'displacement': 1,
+    'em_batalha': False,
+    'num_healing': 0,
+    'target': None
+}
