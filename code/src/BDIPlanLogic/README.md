@@ -45,31 +45,31 @@ Para cada Desejo, criamos uma classe de lógica específica (ex: SurvivePlanLogi
 
 **1. SurvivePlanLogic:** Focado em sobrevivência individual para o agente Character_Agent. Decide entre atacar, curar, fugir, ou pedir cura a amigos, com base no HP e nos itens de cura.
 <div align="center">
-  <img src="./survivetree.png" alt="SurvivePlanLogic" width="700"/>
+  <img src="../assets/survivetree.png" alt="SurvivePlanLogic" width="700"/>
   <p>Figura 1 - SurvivePlanLogic.</p>
 </div>
 
 **2. BattlePlanLogic:** Lógica de combate tático para o agente Character_Agent. Decide como adquirir um alvo (adjacente, alvo do amigo, ou buscar) quando o agente não tem um.
 <div align="center">
-  <img src="./combattree.png" alt="BattlePlanLogic" width="700"/>
+  <img src="../assets/combattree.png" alt="BattlePlanLogic" width="700"/>
   <p>BattlePlanLogic.</p>
 </div>
 
 **3. RetaliateAttackPlanLogic:** Lógica de reação. É ativada quando o agente é atacado, decidindo se deve contra-atacar, aproximar-se ou definir o atacante como alvo.
 <div align="center">
-  <img src="./retaliateattacktree.png" alt="RetaliateAttackPlanLogic" width="700"/>
+  <img src="../assets/retaliateattacktree.png" alt="RetaliateAttackPlanLogic" width="700"/>
   <p>RetaliateAttackPlanLogic.</p>
 </div>
 
 **4. ExplorationPlanLogic:** Lógica de "tempo ocioso". Decide entre explorar aleatoriamente, buscar itens de cura no mapa ou atacar inimigos próximos se estiver com HP baixo.
 <div align="center">
-  <img src="./explorationtree.png" alt="ExplorationPlanLogic" width="700"/>
+  <img src="../assets/explorationtree.png" alt="ExplorationPlanLogic" width="700"/>
   <p>ExplorationPlanLogic.</p>
 </div>
 
 **5. AnimalAgentPlanLogic:** Lógica de sobrevivência para o agente Animal_Agent. Decide entre fugir, desesperar-se, curar explorar.
 <div align="center">
-  <img src="./surviveanimaltree.png" alt="AnimalAgentPlanLogic" width="700"/>
+  <img src="../assets/surviveanimaltree.png" alt="AnimalAgentPlanLogic" width="700"/>
   <p>AnimalAgentPlanLogic.</p>
 </div>
 

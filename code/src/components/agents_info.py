@@ -6,7 +6,7 @@ AVATAR_PLACEHOLDER = "/assets/coelho.jpg"
 BASE_DIR = os.path.dirname(__file__)
 AVATAR_MAP = {
     "CHARACTER": os.path.join(BASE_DIR, "../assets/character.jpg"),
-    "ANIMAL": os.path.join(BASE_DIR, "../assets/slime.webp"),
+    "ANIMAL": os.path.join(BASE_DIR, "../assets/Slime_Rimuru.png"),
     "ENEMY": os.path.join(BASE_DIR, "../assets/goblin.jpg"),
 }
 
