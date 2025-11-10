@@ -56,7 +56,7 @@ model_params = {
 }
 
 if __name__ == "__main__":
-    modelo_rpg = RPGModel(width=40, height=20, n=4)
+    modelo_rpg = RPGModel(width=40, height=20, n=3)
     
     renderer = SpaceRenderer(model=modelo_rpg, backend="matplotlib").render(
         agent_portrayal=agent_portrayal,
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     page = SolaraViz(
         modelo_rpg,
         renderer,
-        components=[AgentInfo],  # Adicionar componente de informações
+        components=[AgentInfo],
         model_params=model_params,
         name="RPG Model",
     )

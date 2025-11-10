@@ -6,7 +6,7 @@ AVATAR_PLACEHOLDER = "/assets/coelho.jpg"
 BASE_DIR = os.path.dirname(__file__)
 AVATAR_MAP = {
     "CHARACTER": os.path.join(BASE_DIR, "../assets/character.jpg"),
-    "ANIMAL": os.path.join(BASE_DIR, "../assets/coelho.jpg"),
+    "ANIMAL": os.path.join(BASE_DIR, "../assets/slime.webp"),
     "ENEMY": os.path.join(BASE_DIR, "../assets/goblin.jpg"),
 }
 
@@ -53,6 +53,7 @@ def AgentInfo(model):
                     "Tipo": agent.type,
                     "Intenção": getattr(agent, "intention", "Desconhecida"),
                     "Vida": beliefs.get("hp", "-"),
+                    "Vida Máxima": beliefs.get("hpMax", "-"),
                     "Posição": f"({cell.coordinate[0]}, {cell.coordinate[1]})",
                     "Em Batalha": "Sim" if beliefs.get("in_battle") else "Não",
                     "Curas": beliefs.get("num_healing", "-"),
@@ -80,11 +81,14 @@ def AgentInfo(model):
                     if key == "Avatar":
                         with solara.Div(style=STYLE_CELL_AVATAR):
                             solara.Image(str(value))
+
                     elif key == "Vida" and isinstance(value, (int, float)):
+                        hpMax = agent_data.get('Vida Máxima', '-')
                         with solara.Div(style=STYLE_CELL_NORMAL):
-                            color = "green" if value >= 50 else "red"
-                            solara.ProgressLinear(value=value, color=color, style={"height": "12px", "border-radius": "6px"})
-                            solara.Text(f"{int(value)}/100 HP", style={"font-size": "0.8em", "text-align": "center"})
+                            color = "green" if value >= hpMax*0.3 else "red"
+                            solara.ProgressLinear(value=(value / hpMax) * 100, color=color, style={"height": "12px", "border-radius": "6px"})
+                            solara.Text(f"{int(value)}/{int(hpMax)} HP", style={"font-size": "0.8em", "text-align": "center"})
+
                     elif key == "Em Batalha":
                         with solara.Div(style=STYLE_CELL_NORMAL):
                             if value == "Sim":
@@ -93,6 +97,7 @@ def AgentInfo(model):
                             else:
                                 # print("Não estou em batalha")
                                 solara.Text("🛡️ Seguro", style={"font-size": "1em", "color": "green"})
+                                
                     else:
                         with solara.Div(style=STYLE_CELL_NORMAL):
                             solara.Text(str(value))

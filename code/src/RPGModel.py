@@ -2,12 +2,12 @@ import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 from mesa.discrete_space.property_layer import PropertyLayer
 from Agents.character_agent import Character_Agent 
-from Agents.mob_agent import Mob_Agent
-from Agents.animal_agent import Animal_Agent 
+from Agents.mob_agent import Mob_Agent 
+from Agents.animal_agent import Animal_Agent
 from mocks.beliefs import (
     beliefs4,
-    enemy_beliefs1,
-    animal_beliefs)
+    enemy_beliefs1)
+from mocks.npc_beliefs import slime_beliefs
 
 class RPGModel(mesa.Model):
     """
@@ -25,7 +25,7 @@ class RPGModel(mesa.Model):
             (width, height), torus=True, capacity=1, random=self.random
         )
 
-        healing_item_prob = 0.035 # 5% de chance de ter item de cura em uma das células do grid
+        healing_item_prob = 0.035 # 3.5% de chance de ter item de cura em uma das células do grid
 
         layer_name = "healing_item_spot"
 
@@ -55,11 +55,11 @@ class RPGModel(mesa.Model):
         # Referência para que os agentes possam acessar a camada de cura
         self.healing_layer = healing_layer
 
-        Mob_Agent.create_agents(
+        Animal_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=enemy_beliefs1
+            beliefs=slime_beliefs
         )
         Character_Agent.create_agents(
             model=self,
@@ -67,11 +67,11 @@ class RPGModel(mesa.Model):
             n=self.num_agents,
             beliefs=beliefs4
         )
-        Animal_Agent.create_agents(
+        Mob_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=animal_beliefs
+            beliefs=enemy_beliefs1
         )
 
     def get_agent_by_id(self, agent_id):

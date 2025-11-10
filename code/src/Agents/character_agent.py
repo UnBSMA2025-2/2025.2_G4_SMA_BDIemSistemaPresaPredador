@@ -68,6 +68,7 @@ class Character_Agent(IBDI_Agent):
 
     # ---------------------- EXPLORAÇÃO ---------------------- #
     def _select_smart_exploration_cell(self):
+        if self.cell is None: return
         neighbors = self.cell.neighborhood.cells
         empty_neighbors = [cell for cell in neighbors if cell.is_empty]
 
@@ -153,7 +154,7 @@ class Character_Agent(IBDI_Agent):
     def set_target(self):
         vizinhos = self.cell.get_neighborhood(self.beliefs['displacement']).cells
         for cell in vizinhos:
-            if len(cell.agents) != 0 and cell.agents[0].type == 'ENEMY':
+            if len(cell.agents) != 0 and cell.agents[0].type != 'CHARACTER':
                 enemy_id = cell.agents[0].unique_id
                 enemy = self.model.get_agent_by_id(enemy_id)
                 self.beliefs['target'] = enemy
@@ -175,7 +176,7 @@ class Character_Agent(IBDI_Agent):
         for i in range(1, self.model.grid.width):
             vizinhos = self.cell.get_neighborhood(i).cells
             for cell in vizinhos:
-                if len(cell.agents) != 0 and cell.agents[0].type == 'ENEMY':
+                if len(cell.agents) != 0 and cell.agents[0].type != 'CHARACTER':
                     self.beliefs['target'] = cell.agents[0]
                     self.beliefs['in_battle'] = True  # ✅ Entrou em batalha
                     return
@@ -333,9 +334,7 @@ class Character_Agent(IBDI_Agent):
         # print(f'INBOX DEPOIS: {self.inbox}')
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')
         print(f'PLANO [{self.unique_id}]: {self.desires[0]}')
-        # print(f'[{self.beliefs["name"]}] HP: {self.beliefs["hp"]}')
-        print(f'Itens de cura: {self.beliefs["num_healing"]}')
-        print(f'Em batalha: {self.beliefs["in_battle"]}')
+        if self.beliefs['target'] is not None: print(f'ALVO: {self.beliefs['target'].beliefs}')
         print("-" * 40)
 
 
