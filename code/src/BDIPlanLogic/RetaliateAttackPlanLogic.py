@@ -51,7 +51,7 @@ class RetaliateAttackPlanLogic:
 
     def _build_tree(self, cond_foi_atacado, cond_possui_alvo, cond_consegue_atacar):
         # --- PASSO A: Definir todas as FOLHAS (Ações) ---
-        acao_continuar = IntentionNode("CONTINUAR")
+        acao_continuar = IntentionNode("MOVER-SE")
         acao_definir_alvo = IntentionNode("DEFINIR ALVO")
         acao_atacar = IntentionNode("ATACAR")
         acao_aproximar = IntentionNode("APROXIMAR-SE")

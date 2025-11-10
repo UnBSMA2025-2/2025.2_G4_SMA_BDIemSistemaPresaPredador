@@ -35,6 +35,10 @@ run:
 	@echo "-> Executando o servidor da simulação do mundo RPG..."
 	. $(VENV_DIR)/bin/activate; $(SOLARA) src/main.py
 
+test:
+	@echo "-> Executando a switch de testes..."
+	. $(VENV_DIR)/bin/activate; pytest
+
 clean:
 	@echo "-> Removendo ambiente virtual '$(VENV_DIR)'..."
 	rm -rf $(VENV_DIR)
