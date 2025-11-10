@@ -56,17 +56,9 @@ A simulação permite-nos observar como estes agentes BDI autônomos gerenciam a
 [Clique aqui!](https://www.youtube.com/watch?v=MZNgeq5jD30)
 
 ## Screenshots
-<div align="center">
-  <img src="./image1.png" alt="SurvivePlanLogic" width="700"/>
-</div>
+![Captura de tela de 2025-11-04 08-24-08](https://drive.google.com/file/d/13q0rm-udvfWCABHmJJG0qRPkS_KDEKFS/view?usp=sharing)<br>
+![Captura de tela de 2025-11-04 08-27-22](https://drive.google.com/file/d/1G0NofoJ6uaz8TJjUcFYwW2nGaxjn94t6/view?usp=sharing)
 
-<div align="center">
-  <img src="./image2.png" alt="SurvivePlanLogic" width="700"/>
-</div>
-
-<div align="center">
-  <img src="./image.png" alt="SurvivePlanLogic" width="700"/>
-</div>
 
 ## Instalação 
 **Linguagens**: Python<br>
