@@ -1,11 +1,14 @@
 import random
-import uuid
 from Interfaces.IBDI_Agent import IBDI_Agent
 from communication import MessageDict
-from BDIPlanLogic.EnemyAgentPlanLogic import EnemyAgentPlanLogic
+from BDIPlanLogic.AnimalAgentPlanLogic import AnimalAgentPlanLogic
 from utils.move_to_agent import move_to_agent
+from utils.get_distance import get_distance
+from BDIPlanLogic.AnimalDesires import get_desire
+import copy
 
-class Enemy_Agent(IBDI_Agent):
+
+class Animal_Agent(IBDI_Agent):
     """
     Um agente que representa um inimigo comum com lógica BDI.
     """
@@ -21,12 +24,12 @@ class Enemy_Agent(IBDI_Agent):
         self.cell = cell
         self.type = type
         self.plan_library = {
-            'SURVIVE': EnemyAgentPlanLogic()
+            'SURVIVE': AnimalAgentPlanLogic()
         }
 
         self.inbox = []
-        self.beliefs = beliefs
-        self.desires = ['SURVIVE']
+        self.beliefs = copy.deepcopy(beliefs)
+        self.desires = ['']
         self.intention = None
 
     def move_to_target(self, target_coordinate, displacement=1):
@@ -60,7 +63,8 @@ class Enemy_Agent(IBDI_Agent):
         
         self.move_to_target(vizinho.coordinate, 1)
 
-    def flee_and_heal(self):
+    def be_desperate(self):
+        if self.cell is None: return
         for step in range(self.beliefs['displacement']):
             neighbor = self.cell.neighborhood.select_random_cell()
             while not self.move_to_target(neighbor.coordinate):
@@ -72,8 +76,20 @@ class Enemy_Agent(IBDI_Agent):
         else:
             self.beliefs['hp'] = newHp
         
+    def flee(self):
+        if self.cell is None: return 
+        neighbors = self.cell.neighborhood.cells
+        cur_pos = self.cell.coordinate
+        tar_pos = self.beliefs['target'].cell.coordinate
+        dist = get_distance(cur_pos[0], cur_pos[1], tar_pos[0], tar_pos[1])
+        
+        for cell in neighbors:
+            if get_distance(cell.coordinate[0], cell.coordinate[1], tar_pos[0], tar_pos[1]) > dist:
+                if self.move_to_target(cell.coordinate, 1):
+                    return 
+    
     def heal(self):
-        newHp = self.beliefs['hp'] + random.randint(5, 10)
+        newHp = self.beliefs['hp'] + random.randint(1, 4)
         if newHp > self.beliefs['hpMax']:
             self.beliefs['hp'] = self.beliefs['hpMax']
         else:
@@ -105,21 +121,9 @@ class Enemy_Agent(IBDI_Agent):
                         self.beliefs['target'] = cell.agents[0]
                         self.beliefs['em_batalha'] = True
                         return
-    
-    def attack_enemy(self):
-        enemyAgent = self.beliefs['target']
-        
-        message = MessageDict(
-            performative='ATTACK_TARGET',
-            sender=self.unique_id,
-            receiver=enemyAgent.unique_id,
-            content={'atk': self.beliefs['atk']},
-            conversation_id=uuid.uuid4()
-        )
-        
-        enemyAgent.inbox.append(message)
-        
-        return
+                else:
+                    self.beliefs['target'] = None
+                    self.beliefs['em_batalha'] = False
         
     def receive_attack(self, message):
         damage = message['content']['atk']- self.beliefs['def']
@@ -147,38 +151,26 @@ class Enemy_Agent(IBDI_Agent):
         if not self.beliefs['is_alive']:
             self.remove()
         
-        return
+        self.beliefs['em_batalha'] = True
 
-    def attack_response(self, message):
-        if not message['content']['is_alive']:
-            self.beliefs['target'] = None
-            self.beliefs['em_batalha'] = False
         return
 
     # -------- BDI -------- #   
     def update_desires(self):
-        pass
+        self.desires[0] = get_desire(self)
 
     def deliberate(self):
         self.intention = self.plan_library[self.desires[0]].get_intention(self)
 
     def execute_plan(self):
-        match self.intention:            
+        match self.intention:
             case 'FUGIR':
-                self.flee_and_heal()
+                self.flee()
+                # self.set_target()
                 return
-            
-            case 'ATACAR INIMIGO':
-                self.attack_enemy()
-                return
-            
-            case 'APROXIMAR-SE':
-                print(f'POSIÇÃO: {self.cell.coordinate}')
-                self.move_to_target(
-                    self.beliefs['target'].cell.coordinate,
-                    self.beliefs['displacement']
-                )
-                print(f'POSIÇÃO NOVA: {self.cell.coordinate}')
+                        
+            case 'DESESPERAR':
+                self.be_desperate()
                 return
             
             case 'CURAR':
@@ -199,19 +191,18 @@ class Enemy_Agent(IBDI_Agent):
                 case 'ATTACK_TARGET':
                     self.receive_attack(message)
                 
-                case 'ATTACK_RESPONSE':
-                    self.attack_response(message)
-                
                 case _:
                     pass
             self.inbox.remove(message)
 
     def step(self):
-        print(f"Executando step do inimigo...")
+        print("-" * 40)
+        print(f"Executando step do animal...")
         print(f'INBOX: {self.inbox}')
+        
         self.process_message()
         self.update_desires()
         self.deliberate()
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')           
-        print("-"*40)
+        print("-" * 40)

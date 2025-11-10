@@ -10,7 +10,7 @@ def cond_there_are_enemies_nearby(agent):
     """
     Verifica se existe um inimigo DENTRO DO ALCANCE de percepção do agente.
     """
-    range_de_visao = agent.beliefs.get('displacement', 1) # Usar 1 como default se não existir
+    range_de_visao = agent.beliefs.get('vision', 1) # Usar 1 como default se não existir
     
     vizinhos = agent.cell.get_neighborhood(range_de_visao).cells 
     

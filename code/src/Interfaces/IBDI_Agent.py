@@ -18,15 +18,12 @@ class IBDI_Agent(CellAgent, abc.ABC):
         super().__init__(model)
         
         # 1. Crenças (Beliefs): O que o agente "sabe" ou "acredita"
-        #    (Deve ser inicializado pela classe filha, tipicamente como dict)
         self.beliefs = {}
         
         # 2. Desejos (Desires): Os objetivos de alto nível do agente.
-        #    (Deve ser inicializado pela classe filha, tipicamente como set)
         self.desires = set()
         
         # 3. Intenções (Intentions): O plano ou ação que o agente 
-        #    (Deve ser inicializado pela classe filha, tipicamente como None)
         self.intention = None
 
     # --- Métodos Abstratos (Ciclo BDI) ---
@@ -34,6 +31,7 @@ class IBDI_Agent(CellAgent, abc.ABC):
     @abc.abstractmethod
     def update_desires(self):
         """
+        Fase 1 do BDI: Atualizar desejos).
         """
         pass
 
@@ -41,10 +39,6 @@ class IBDI_Agent(CellAgent, abc.ABC):
     def deliberate(self):
         """
         Fase 2 do BDI: Deliberar (Deliberate).
-        
-        O agente deve avaliar suas crenças (self.beliefs) contra seus
-        desejos (self.desires) para selecionar uma intenção 
-        (self.intention) a ser executada.
         """
         pass
 
@@ -52,10 +46,6 @@ class IBDI_Agent(CellAgent, abc.ABC):
     def execute_plan(self):
         """
         Fase 3 do BDI: Agir (Act / Execute Plan).
-        
-        O agente deve executar a ação concreta no ambiente (modificar 
-        o 'model' ou 'grid') com base na intenção (self.intention) 
-        definida na fase de deliberação.
         """
         pass
 
@@ -63,13 +53,5 @@ class IBDI_Agent(CellAgent, abc.ABC):
     def step(self):
         """
         Método 'step' do MESA.
-        
-        Este método é chamado pelo scheduler do MESA a cada passo.
-        Ele deve orquestrar a execução do ciclo BDI, tipicamente
-        chamando:
-        
-        1. self.update_beliefs()
-        2. self.deliberate()
-        3. self.execute_plan()
         """
         pass

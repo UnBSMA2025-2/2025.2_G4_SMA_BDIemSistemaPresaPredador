@@ -3,138 +3,129 @@ from utils.move_to_agent import move_to_agent
 from BDIPlanLogic.SurvivePlanLogic import SurvivePlanLogic
 from BDIPlanLogic.BattlePlanLogic import BattlePlanLogic
 from BDIPlanLogic.ExplorationPlanLogic import ExplorationPlanLogic
-import random
 from communication import MessageDict
-import uuid
 from BDIPlanLogic.CharacterDesires import get_desire
+import uuid
+import random
+import copy
+
 
 class Character_Agent(IBDI_Agent):
     """
     Um agente que representa um personagem de RPG com lógica BDI.
     """
-    def __init__(
-        self, 
-        model, 
-        cell, 
-        beliefs,
-        type='CHARACTER'
-        ):
+    def __init__(self, model, cell, beliefs, type='CHARACTER'):
         super().__init__(model)
         self.cell = cell
         self.type = type
         self.plan_library = {
-        'SURVIVE': SurvivePlanLogic(),
-        'BATTLE': BattlePlanLogic(),
-        'EXPLORE': ExplorationPlanLogic(),
-        }        
+            'SURVIVE': SurvivePlanLogic(),
+            'BATTLE': BattlePlanLogic(),
+            'EXPLORE': ExplorationPlanLogic(),
+        }
         self.inbox = []
-        self.beliefs = beliefs
+        self.beliefs = copy.deepcopy(beliefs)
         self.desires = ['']
         self.intention = None
         self.visited_cells = {}
         self.exploration_cooldown = 70
-        
 
+    # ---------------------- INTERAÇÃO ENTRE AGENTES ---------------------- #
     def get_friends(self):
-        vizinhos = self.cell.get_neighborhood(
-            self.beliefs['displacement'])
-        
-        cell_agentes_amigos = vizinhos.select(
-            lambda cell: not cell.is_empty and next(iter(cell.agents)).type == 'CHARACTER').cells
-    
-        return cell_agentes_amigos
+        if self.cell is not None:
+            vizinhos = self.cell.get_neighborhood(
+                self.beliefs['displacement'])
+            cell_agentes_amigos = vizinhos.select(
+                lambda cell: not cell.is_empty and next(iter(cell.agents)).type == 'CHARACTER').cells
+            return cell_agentes_amigos
 
     def move_to_target(self, target_coordinate, displacement):
+        if not self.cell: self.explore()
+
         h = self.model.grid.height
         l = self.model.grid.width
         pos_a = self.cell.coordinate
         pos_b = target_coordinate
-        
+
         new_position = move_to_agent(
-            h=h, 
-            l=l, 
+            h=h,
+            l=l,
             ax=pos_a[0],
             ay=pos_a[1],
-            bx=pos_b[0], 
-            by=pos_b[1], 
+            bx=pos_b[0],
+            by=pos_b[1],
             max_step=displacement
         )
-        
+
         new_cell = next(iter(self.model.grid.all_cells.select(
             lambda cell: cell.coordinate == new_position
         )))
-        # print('Nova célula e suas posições:')
         print(new_cell)
-        
+
         if new_cell.is_empty:
             self.cell = new_cell
             self.visited_cells[new_cell.coordinate] = self.model.steps
-        
+
+    # ---------------------- EXPLORAÇÃO ---------------------- #
     def _select_smart_exploration_cell(self):
-        """
-        Escolhe a melhor célula vizinha para explorar.
-        Prioriza células vazias e não visitadas ou "antigas".
-        """
+        if self.cell is None: return
         neighbors = self.cell.neighborhood.cells
-        
         empty_neighbors = [cell for cell in neighbors if cell.is_empty]
-        
+
         if not empty_neighbors:
             return None
 
-        unvisited_cells = []
-        for cell in empty_neighbors:
-            if cell.coordinate not in self.visited_cells:
-                unvisited_cells.append(cell)
-        
+        unvisited_cells = [cell for cell in empty_neighbors if cell.coordinate not in self.visited_cells]
         if unvisited_cells:
-            # Encontrou células novas para explorar
             return self.random.choice(unvisited_cells)
-        
+
         oldest_cell = None
-        # Começa com um valor impossivelmente baixo
-        min_last_visit_step = -1 
+        min_last_visit_step = -1
 
         for cell in empty_neighbors:
             last_visit_step = self.visited_cells.get(cell.coordinate, 0)
-            
-            # Verifica se o cooldown já passou
             if (self.model.steps - last_visit_step) > self.exploration_cooldown:
                 if oldest_cell is None or last_visit_step < min_last_visit_step:
                     min_last_visit_step = last_visit_step
                     oldest_cell = cell
-        
+
         if oldest_cell:
-            # Encontrou a célula "mais antiga" e que passou do cooldown
             return oldest_cell
-        
-        # Se está preso (todas as vizinhas foram visitadas recentemente), apenas escolhe uma aleatória das vazias para não ficar parado.
         return self.random.choice(empty_neighbors)
 
-    def attack_enemy(self):
-        enemyAgent = self.beliefs['target']
-
-        message = None
-
-        if enemyAgent.beliefs['target'] == self and self.beliefs['classe'] == 'LADINO':
-            message = MessageDict(
-                performative='ATTACK_TARGET',
-                sender=self.unique_id,
-                receiver=enemyAgent.unique_id,
-                content={'atk': self.beliefs['atk'] + random.randint(1, 16)},
-                conversation_id=uuid.uuid4()
-            )
+    def explore(self):
+        best_cell = self._select_smart_exploration_cell()
+        if best_cell:
+            # print(f'AGENTE [{self.unique_id}] explorando (inteligente) para: {best_cell.coordinate}')
+            self.move_to_target(best_cell.coordinate, self.beliefs['displacement'])
         else:
-            message = MessageDict(
-                performative='ATTACK_TARGET',
-                sender=self.unique_id,
-                receiver=enemyAgent.unique_id,
-                content={'atk': self.beliefs['atk']},
-                conversation_id=uuid.uuid4()
-            )
+            print(f'AGENTE [{self.unique_id}] está preso. Intenção: ESPERAR.')
+
+    # ---------------------- COMBATE ---------------------- #
+    def attack_enemy(self):
+        enemyAgent = self.beliefs.get('target')
+
+        if enemyAgent is None:
+            self.beliefs['in_battle'] = False
+            return
+
+        # ✅ Garante que o agente esteja em batalha
+        self.beliefs['in_battle'] = True
+
+        if enemyAgent.beliefs.get('target') == self and self.beliefs['classe'] == 'LADINO':
+            atk_valor = self.beliefs['atk'] + random.randint(1, 16)
+        else:
+            atk_valor = self.beliefs['atk']
+
+        message = MessageDict(
+            performative='ATTACK_TARGET',
+            sender=self.unique_id,
+            receiver=enemyAgent.unique_id,
+            content={'atk': atk_valor},
+            conversation_id=uuid.uuid4()
+        )
 
         enemyAgent.inbox.append(message)
-        return
 
     def heal(self):
         if self.beliefs['num_healing'] > 0:
@@ -142,11 +133,8 @@ class Character_Agent(IBDI_Agent):
             self.beliefs['num_healing'] -= 1
 
     def request_heal(self):
-        '''
-        Método solicitar uma cura via mensagem
-        '''
         for cell in self.get_friends():
-            if not cell.agents[0].beliefs['em_batalha'] and cell.agents[0].beliefs['num_healing'] > 1:
+            if not cell.agents[0].beliefs['in_battle'] and cell.agents[0].beliefs['num_healing'] > 1:
                 message = MessageDict(
                     performative='SEND_HEALING',
                     sender=self.unique_id,
@@ -158,50 +146,47 @@ class Character_Agent(IBDI_Agent):
                 return
 
     def escape(self):
-        vizinho = self.cell.neighborhood.select_random_cell()
-        
-        self.move_to_target(vizinho.coordinate, 1)
+        if self.cell is not None:
+            vizinho = self.cell.neighborhood.select_random_cell()
+            self.move_to_target(vizinho.coordinate, 1)
 
+    # ---------------------- DEFINIÇÃO DE ALVOS ---------------------- #
     def set_target(self):
-        vizinhos = self.cell.neighborhood.cells
+        vizinhos = self.cell.get_neighborhood(self.beliefs['displacement']).cells
         for cell in vizinhos:
-            if len(cell.agents) != 0:
-                    if cell.agents[0].type != 'CHARACTER':
-                        self.beliefs['target'] = cell.agents[0]
-                        return
+            if len(cell.agents) != 0 and cell.agents[0].type != 'CHARACTER':
+                enemy_id = cell.agents[0].unique_id
+                enemy = self.model.get_agent_by_id(enemy_id)
+                self.beliefs['target'] = enemy
+                self.beliefs['target'].cell = enemy.cell
+                self.beliefs['in_battle'] = True  # ✅ Entrou em batalha
+                return
 
     def set_friends_target(self):
-        vizinhos = self.cell.get_neighborhood(
-                self.beliefs['displacement']).cells 
+        vizinhos = self.cell.get_neighborhood(self.beliefs['displacement']).cells
         for cell in vizinhos:
             if len(cell.agents) != 0:
-                if cell.agents[0].type == 'CHARACTER' and cell.agents[0].beliefs['em_batalha']:
-                    self.beliefs['target'] = cell.agents[0].beliefs['target']
+                friend = cell.agents[0]
+                if friend.type == 'CHARACTER' and friend.beliefs['in_battle']:
+                    self.beliefs['target'] = friend.beliefs['target']
+                    self.beliefs['in_battle'] = True  # ✅ Segue o amigo em batalha
+                    return
 
     def set_other_target(self):
         for i in range(1, self.model.grid.width):
             vizinhos = self.cell.get_neighborhood(i).cells
             for cell in vizinhos:
-                if len(cell.agents) != 0:
-                    if cell.agents[0].type != 'CHARACTER':
-                        self.beliefs['target'] = cell.agents[0]
-                        self.beliefs['em_batalha'] = True
-                        return
-        
+                if len(cell.agents) != 0 and cell.agents[0].type != 'CHARACTER':
+                    self.beliefs['target'] = cell.agents[0]
+                    self.beliefs['in_battle'] = True  # ✅ Entrou em batalha
+                    return
+
+    # ---------------------- CURA VIA MENSAGENS ---------------------- #
     def get_heal(self, message):
-        '''
-        Método para receber uma cura via mensagem
-        '''
         self.beliefs['num_healing'] += message['content']['num_healing']
-        return
 
     def send_heal(self, message):
-        """
-        Método para enviar uma cura por mensagem
-        """
-        receiver = self.model.get_agent_by_id(
-            message['sender'])
-        
+        receiver = self.model.get_agent_by_id(message['sender'])
         response = MessageDict(
             performative='GET_HEALING',
             sender=self.unique_id,
@@ -209,15 +194,14 @@ class Character_Agent(IBDI_Agent):
             content={'num_healing': 1},
             conversation_id=message['conversation_id']
         )
-
         receiver.inbox.append(response)
         self.beliefs['num_healing'] -= 1
-        return
-        
+
+    # ---------------------- RECEBER/RESPONDER ATAQUES ---------------------- #
     def receive_attack(self, message):
-        damage = message['content']['atk']- self.beliefs['def']
+        damage = message['content']['atk'] - self.beliefs['def']
         newHp = self.beliefs['hp'] - max(0, damage)
-        
+
         if newHp <= 0:
             self.beliefs['is_alive'] = False
             self.beliefs['hp'] = 0
@@ -230,26 +214,22 @@ class Character_Agent(IBDI_Agent):
             receiver=message['sender'],
             content={'is_alive': self.beliefs['is_alive']},
             conversation_id=message['conversation_id'])
-        receiver = self.model.get_agent_by_id(
-            message['sender'])
+        receiver = self.model.get_agent_by_id(message['sender'])
         if receiver is not None:
             receiver.inbox.append(response)
 
         if not self.beliefs['is_alive']:
             self.remove()
-        
-        return
-    
+
     def attack_response(self, message):
         if not message['content']['is_alive']:
             self.beliefs['target'] = None
-            self.beliefs['em_batalha'] = False
+            self.beliefs['in_battle'] = False  # ✅ Saiu da batalha
         return
 
-    # -------- BDI -------- #
+    # ---------------------- CICLO BDI ---------------------- #
     def update_desires(self):
         self.desires[0] = get_desire(self)
-        pass
 
     def deliberate(self):
         self.intention = self.plan_library[self.desires[0]].get_intention(self)
@@ -259,128 +239,102 @@ class Character_Agent(IBDI_Agent):
             case 'CURAR':
                 self.heal()
                 return
-
             case 'ATACAR INIMIGO':
                 self.attack_enemy()
                 return
-
             case 'APROXIMAR-SE':
-                if self.beliefs['target'] is not None:
-                    if self.beliefs['target'].cell is not None:
-                        self.move_to_target(
-                            self.beliefs['target'].cell.coordinate,
-                            self.beliefs['displacement'])
+                print(f':\n----> {self.beliefs['target'].unique_id}')
+                enemy = self.model.get_agent_by_id(self.beliefs['target'].unique_id)
+                print(f'APROXIMAR-SE:\n----> {enemy}')
+               
+                if self.beliefs['target'] and self.beliefs['target'].cell:
+                    self.move_to_target(
+                        enemy.cell.coordinate,
+                        self.beliefs['displacement'])
                 return
-
             case 'FUGIR':
                 self.escape()
                 return
-
             case 'APROXIMAR-SE DE AMIGO':
                 for cell in self.get_friends():
-                    if not cell.agents[0].beliefs['em_batalha']:
+                    if not cell.agents[0].beliefs['in_battle']:
                         friend_pos = cell.agents[0].cell.coordinate
-                        self.move_to_target(
-                            friend_pos,
-                            self.beliefs['displacement'])
+                        self.move_to_target(friend_pos, self.beliefs['displacement'])
                         return
-
             case 'OBTER CURA':
                 self.request_heal()
                 return
-
-            case 'ESPERAR':
-                return
-
             case 'DEFINIR ALVO':
                 self.set_target()
                 return
-
             case 'DEFINIR ALVO DO AMIGO':
                 self.set_friends_target()
                 return
-
             case 'DEFINIR OUTRO ALVO':
                 self.set_other_target()
                 return
-            
             case 'EXPLORAR':
-                best_cell_to_explore = self._select_smart_exploration_cell()
-
-                if best_cell_to_explore:
-                    print(f'AGENTE [{self.unique_id}] explorando (inteligente) para: {best_cell_to_explore.coordinate}')
-                    
-                    self.move_to_target(
-                        best_cell_to_explore.coordinate,
-                        self.beliefs['displacement'])
-                else:
-                    # Se _select_smart_exploration_cell retornar None, 
-                    # significa que o agente está preso (sem células vazias à volta).
-                    print(f'AGENTE [{self.unique_id}] ESTÁ PRESO. Intenção: ESPERAR.')
-                
+                self.explore()
                 return
-
             case 'APROXIMAR DO ITEM':
                 item_pos = self.beliefs['healing_item_spot']
-                self.move_to_target(
-                    item_pos,
-                    self.beliefs['displacement'])
+                self.move_to_target(item_pos, self.beliefs['displacement'])
                 return
-
             case 'ADQUIRIR ITEM':
                 if self.cell.beliefs.get('healing_item_spot', False):
                     self.beliefs['num_healing'] += 1
                     self.cell.beliefs['healing_item_spot'] = False
                     self.beliefs['healing_item_spot'] = None
-
                     try:
                         healing_layer = self.model.healing_layer
-                        
                         pos = self.cell.coordinate
-                        
                         healing_layer.data[pos] = 0
-                        
-                        print(f"AGENTE [{self.unique_id}] adquiriu item em {pos}. Célula atualizada para 0 (Apagar verde da célula).")
-                        print(f"Itens de cura agora: {self.beliefs['num_healing']}")
-
+                        # print(f"AGENTE [{self.unique_id}] adquiriu item em {pos}.")
                     except (KeyError, AttributeError) as e:
-                        print(f"AVISO [{self.unique_id}]: Falha ao atualizar a PropertyLayer 'healing_item_spot'. Erro: {e}")
+                        print(f"AVISO [{self.unique_id}]: Falha ao atualizar camada de cura. Erro: {e}")
                 else:
-                    print(f"AVISO [{self.unique_id}]: Intenção 'ADQUIRIR ITEM' falhou (célula não tem item).")
+                    print(f"AVISO [{self.unique_id}]: célula sem item de cura.")
                 return
-
             case _:
                 pass
 
     def process_message(self):
-        for message in self.inbox:
+        for message in list(self.inbox):
             match message['performative']:
-                case 'SEND_HEALING': # Envia uma cura
+                case 'SEND_HEALING':
                     self.send_heal(message)
-
-                case 'GET_HEALING': # Recebe a cura
+                case 'GET_HEALING':
                     self.get_heal(message)
-
-                case 'ATTACK_TARGET': # Envia um ataque
+                case 'ATTACK_TARGET':
                     self.receive_attack(message)
-
-                case 'ATTACK_RESPONSE': # Resposta ao ataque do inimigo
+                case 'ATTACK_RESPONSE':
                     self.attack_response(message)
-                case _:
-                    pass
             self.inbox.remove(message)
 
     def step(self):
-        print("-"*40)
+        print("-" * 40)
         print(f"Executando step do personagem...")
         print(f'INBOX: {self.inbox}')
         self.process_message()
         self.update_desires()
         self.deliberate()
         self.execute_plan()
-        print(f'INBOX DEPOIS: {self.inbox}')
-        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}') 
-        print(f'PLANO EM ANDAMENTO [{self.unique_id}]: {self.desires[0]}') 
-        print(f'AGENTE COM NOME [{self.beliefs["name"]}] COM VIDA [{self.beliefs["hp"]}]')  
-        print(f'NÚMERO DE ITENS DE CURA [{self.beliefs["num_healing"]}]')    
-        print("-"*40)
+
+        # ✅ Controle automático do modo de batalha
+        if self.beliefs.get('target') is None or not getattr(self.beliefs['target'], 'beliefs', {}).get('is_alive', True):
+            self.beliefs['in_battle'] = False
+
+        # ✅ Ajuste: sair da batalha se o alvo do amigo morreu
+        if self.beliefs.get('in_battle') and self.beliefs.get('target'):
+            target = self.beliefs['target']
+            if hasattr(target, "beliefs") and not target.beliefs.get("is_alive", True):
+                self.beliefs['in_battle'] = False
+                self.beliefs['target'] = None
+
+        # print(f'INBOX DEPOIS: {self.inbox}')
+        print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')
+        print(f'PLANO [{self.unique_id}]: {self.desires[0]}')
+        if self.beliefs['target'] is not None: print(f'ALVO: {self.beliefs['target'].beliefs}')
+        print("-" * 40)
+
+

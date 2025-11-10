@@ -58,7 +58,7 @@ beliefs3 = {
 
 
 beliefs4 = {
-    'name': 'Lucas',
+    'name': 'Guerreiro',
     'hp': 65,
     'hpMax': 65,
     'is_alive': True,
@@ -66,10 +66,10 @@ beliefs4 = {
     'atk': 25,
     'classe': 'GUERREIRO',
     'range': 0,
-    'iniciativa': 14,
+    'iniciativa': 11,
     'displacement': 1,
+    'vision': 4,
     'em_batalha': False,
-    'hp_agente_alvo': 9,
     'num_healing': 0,
     'healing_item_spot': None,
     'target': None,
@@ -82,11 +82,21 @@ enemy_beliefs1 = {
     'hpMax': 65,
     'is_alive': True,
     'def': 10,
-    'atk': 5,
+    'atk': 15,
     'range': 2,
     'iniciativa': 14,
     'displacement': 2,
     'em_batalha': False,
     'target': None,
     'received_attack': None
+}
+
+animal_beliefs = {
+    'name': 'Coelho',
+    'hp': 10,
+    'hpMax': 10,
+    'is_alive': True,
+    'def': 4,
+    'iniciativa': 4,
+    'displacement': 2,
 }

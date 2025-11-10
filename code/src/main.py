@@ -1,13 +1,13 @@
+from components.agents_info import AgentInfo
 from RPGModel import RPGModel
 from mesa.visualization import (
     SolaraViz, 
-    SpaceRenderer, 
-    make_plot_component, 
-    make_space_component
+    SpaceRenderer 
     )
 from mesa.visualization.components import (
     AgentPortrayalStyle, PropertyLayerStyle
     )
+
 
 def post_process(ax):
     """Personalize os eixos do matplotlib após a renderização."""
@@ -30,16 +30,16 @@ def propertylayer_portrayal(layer):
         vmax=1              # Mapear o valor 1 para a cor mais escura (verde)
     )
 
+
+
 def agent_portrayal(agent):
-    color = agent.beliefs.get('color', None)
-    if color is not None:
-        portrayal = AgentPortrayalStyle(size=50, color=color)
-    # Cor padrão para agentes characters
-    elif agent.type == 'CHARACTER':
-        portrayal = AgentPortrayalStyle(size=50, color="black")
-        # Cor padrão para agentes sem cor definida e sem ser character
+    portrayal = None
+    if agent.type == 'CHARACTER':
+        portrayal = AgentPortrayalStyle(size=50, color="black", marker="^")
+    elif agent.type == 'ANIMAL':
+        portrayal = AgentPortrayalStyle(size=50, color="gray")
     else:
-        portrayal = AgentPortrayalStyle(size=50, color="red")
+        portrayal = AgentPortrayalStyle(size=50, color="red", marker="X")
     return portrayal
 
 model_params = {
@@ -51,8 +51,8 @@ model_params = {
         "max": 100,
         "step": 1,
     },
-    "width": 40,   # <--- MUDADO (seu valor inicial era 40)
-    "height": 20,  # <--- MUDADO (seu valor inicial era 20)
+    "width": 40,  
+    "height": 20,
 }
 
 if __name__ == "__main__":
@@ -64,14 +64,16 @@ if __name__ == "__main__":
         post_process=post_process
     )
 
+    renderer.post_process = post_process
+    renderer.draw_agents(agent_portrayal)
+
     page = SolaraViz(
         modelo_rpg,
         renderer,
-        components=[],
+        components=[AgentInfo],
         model_params=model_params,
         name="RPG Model",
     )
-    # This is required to render the visualization in the Jupyter notebook
+
     page
-    
-    
+
