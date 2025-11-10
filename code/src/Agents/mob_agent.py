@@ -26,6 +26,7 @@ class Mob_Agent(IBDI_Agent):
         self.beliefs = copy.deepcopy(beliefs)
         self.desires = ['']
         self.intention = None
+        self.beliefs['in_battle'] = False
 
     def receive_attack(self, message):
         damage = message['content']['atk']- self.beliefs['def']
@@ -34,9 +35,11 @@ class Mob_Agent(IBDI_Agent):
         if newHp <= 0:
             self.beliefs['is_alive'] = False
             self.beliefs['hp'] = 0
+            self.beliefs['in_battle'] = False
         else:
             self.beliefs['hp'] = newHp
             self.beliefs['received_attack'] = message['sender']
+            self.beliefs['in_battle'] = True
 
         response = MessageDict(
             performative='ATTACK_RESPONSE',
@@ -84,6 +87,11 @@ class Mob_Agent(IBDI_Agent):
     def attack_enemy(self):
         enemyAgent = self.beliefs['target']
 
+        if enemyAgent is None or not enemyAgent.beliefs.get('is_alive', True):
+            self.beliefs['in_battle'] = False
+            self.beliefs['target'] = None
+            return
+
         message = MessageDict(
             performative='ATTACK_TARGET',
             sender=self.unique_id,
@@ -100,7 +108,7 @@ class Mob_Agent(IBDI_Agent):
             enemy = self.model.agents.select(
                 lambda agent: agent.unique_id == self.beliefs['received_attack'])
             self.beliefs['target'] = next(iter(enemy))
-
+            self.beliefs['in_battle'] = True
             print(self.beliefs['target'])
 
     def _select_smart_exploration_cell(self):
@@ -193,4 +201,5 @@ class Mob_Agent(IBDI_Agent):
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')        
         print(f'CÉLULA [{self.unique_id}]: {self.cell}')        
+        print(f'IN_BATTLE [{self.unique_id}]: {self.beliefs["in_battle"]}')        
         print("-"*40)
