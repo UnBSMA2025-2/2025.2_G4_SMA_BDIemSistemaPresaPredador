@@ -54,7 +54,7 @@ def AgentInfo(model):
                     "Intenção": getattr(agent, "intention", "Desconhecida"),
                     "Vida": beliefs.get("hp", "-"),
                     "Posição": f"({cell.coordinate[0]}, {cell.coordinate[1]})",
-                    "Em Batalha": "Sim" if beliefs.get("em_batalha") else "Não",
+                    "Em Batalha": "Sim" if beliefs.get("in_battle") else "Não",
                     "Curas": beliefs.get("num_healing", "-"),
                 }
                 agents_data.append(agent_info)

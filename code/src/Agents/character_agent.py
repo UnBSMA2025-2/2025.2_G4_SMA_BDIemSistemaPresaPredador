@@ -105,11 +105,11 @@ class Character_Agent(IBDI_Agent):
         enemyAgent = self.beliefs.get('target')
 
         if enemyAgent is None:
-            self.beliefs['em_batalha'] = False
+            self.beliefs['in_battle'] = False
             return
 
         # ✅ Garante que o agente esteja em batalha
-        self.beliefs['em_batalha'] = True
+        self.beliefs['in_battle'] = True
 
         if enemyAgent.beliefs.get('target') == self and self.beliefs['classe'] == 'LADINO':
             atk_valor = self.beliefs['atk'] + random.randint(1, 16)
@@ -133,7 +133,7 @@ class Character_Agent(IBDI_Agent):
 
     def request_heal(self):
         for cell in self.get_friends():
-            if not cell.agents[0].beliefs['em_batalha'] and cell.agents[0].beliefs['num_healing'] > 1:
+            if not cell.agents[0].beliefs['in_battle'] and cell.agents[0].beliefs['num_healing'] > 1:
                 message = MessageDict(
                     performative='SEND_HEALING',
                     sender=self.unique_id,
@@ -158,7 +158,7 @@ class Character_Agent(IBDI_Agent):
                 enemy = self.model.get_agent_by_id(enemy_id)
                 self.beliefs['target'] = enemy
                 self.beliefs['target'].cell = enemy.cell
-                self.beliefs['em_batalha'] = True  # ✅ Entrou em batalha
+                self.beliefs['in_battle'] = True  # ✅ Entrou em batalha
                 return
 
     def set_friends_target(self):
@@ -166,9 +166,9 @@ class Character_Agent(IBDI_Agent):
         for cell in vizinhos:
             if len(cell.agents) != 0:
                 friend = cell.agents[0]
-                if friend.type == 'CHARACTER' and friend.beliefs['em_batalha']:
+                if friend.type == 'CHARACTER' and friend.beliefs['in_battle']:
                     self.beliefs['target'] = friend.beliefs['target']
-                    self.beliefs['em_batalha'] = True  # ✅ Segue o amigo em batalha
+                    self.beliefs['in_battle'] = True  # ✅ Segue o amigo em batalha
                     return
 
     def set_other_target(self):
@@ -177,7 +177,7 @@ class Character_Agent(IBDI_Agent):
             for cell in vizinhos:
                 if len(cell.agents) != 0 and cell.agents[0].type == 'ENEMY':
                     self.beliefs['target'] = cell.agents[0]
-                    self.beliefs['em_batalha'] = True  # ✅ Entrou em batalha
+                    self.beliefs['in_battle'] = True  # ✅ Entrou em batalha
                     return
 
     # ---------------------- CURA VIA MENSAGENS ---------------------- #
@@ -223,7 +223,7 @@ class Character_Agent(IBDI_Agent):
     def attack_response(self, message):
         if not message['content']['is_alive']:
             self.beliefs['target'] = None
-            self.beliefs['em_batalha'] = False  # ✅ Saiu da batalha
+            self.beliefs['in_battle'] = False  # ✅ Saiu da batalha
         return
 
     # ---------------------- CICLO BDI ---------------------- #
@@ -256,7 +256,7 @@ class Character_Agent(IBDI_Agent):
                 return
             case 'APROXIMAR-SE DE AMIGO':
                 for cell in self.get_friends():
-                    if not cell.agents[0].beliefs['em_batalha']:
+                    if not cell.agents[0].beliefs['in_battle']:
                         friend_pos = cell.agents[0].cell.coordinate
                         self.move_to_target(friend_pos, self.beliefs['displacement'])
                         return
@@ -321,13 +321,21 @@ class Character_Agent(IBDI_Agent):
 
         # ✅ Controle automático do modo de batalha
         if self.beliefs.get('target') is None or not getattr(self.beliefs['target'], 'beliefs', {}).get('is_alive', True):
-            self.beliefs['em_batalha'] = False
+            self.beliefs['in_battle'] = False
+
+        # ✅ Ajuste: sair da batalha se o alvo do amigo morreu
+        if self.beliefs.get('in_battle') and self.beliefs.get('target'):
+            target = self.beliefs['target']
+            if hasattr(target, "beliefs") and not target.beliefs.get("is_alive", True):
+                self.beliefs['in_battle'] = False
+                self.beliefs['target'] = None
 
         # print(f'INBOX DEPOIS: {self.inbox}')
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')
         print(f'PLANO [{self.unique_id}]: {self.desires[0]}')
         # print(f'[{self.beliefs["name"]}] HP: {self.beliefs["hp"]}')
         print(f'Itens de cura: {self.beliefs["num_healing"]}')
-        print(f'Em batalha: {self.beliefs["em_batalha"]}')
+        print(f'Em batalha: {self.beliefs["in_battle"]}')
         print("-" * 40)
+
 
