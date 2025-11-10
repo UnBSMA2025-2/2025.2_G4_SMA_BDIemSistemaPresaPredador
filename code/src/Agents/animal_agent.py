@@ -16,7 +16,7 @@ class Animal_Agent(IBDI_Agent):
         beliefs,
         type='ANIMAL'):
         super().__init__(model)
-        self.cell = copy.deepcopy(cell)
+        self.cell = cell
         self.type = type
         self.visited_cells = {}
         self.plan_library = {
@@ -27,33 +27,8 @@ class Animal_Agent(IBDI_Agent):
         self.desires = ['']
         self.intention = None
 
-    def receive_attack(self, message):
-        damage = message['content']['atk']- self.beliefs['def']
-        newHp = self.beliefs['hp'] - max(0, damage)
-        
-        if newHp <= 0:
-            self.beliefs['is_alive'] = False
-            self.beliefs['hp'] = 0
-        else:
-            self.beliefs['hp'] = newHp
-            self.beliefs['received_attack'] = message['sender']
 
-        response = MessageDict(
-            performative='ATTACK_RESPONSE',
-            sender=self.unique_id,
-            receiver=message['sender'],
-            content={'is_alive': self.beliefs['is_alive']},
-            conversation_id=message['conversation_id'])
-        receiver = self.model.get_agent_by_id(
-            message['sender'])
-        receiver.inbox.append(response)
-
-        if not self.beliefs['is_alive']:
-            print(self.beliefs['is_alive'])
-            self.remove()
-        
-        return
-    
+    # ---------------------- EXPLORAÇÃO ---------------------- #
     def move_to_target(self, target_coordinate, displacement):
         h = self.model.grid.height
         l = self.model.grid.width
@@ -80,29 +55,7 @@ class Animal_Agent(IBDI_Agent):
         
         if new_cell.is_empty:
             self.cell = new_cell
-   
-    def attack_enemy(self):
-        enemyAgent = self.beliefs['target']
-
-        message = MessageDict(
-            performative='ATTACK_TARGET',
-            sender=self.unique_id,
-            receiver=enemyAgent.unique_id,
-            content={'atk': self.beliefs['atk']},
-            conversation_id=uuid.uuid4()
-        )
-
-        enemyAgent.inbox.append(message)
-        return
-
-    def set_attacked_target(self):
-        if self.beliefs['received_attack'] is not None:
-            enemy = self.model.agents.select(
-                lambda agent: agent.unique_id == self.beliefs['received_attack'])
-            self.beliefs['target'] = next(iter(enemy))
-
-            print(self.beliefs['target'])
-
+    
     def _select_smart_exploration_cell(self):
         neighbors = self.cell.neighborhood.cells
         empty_neighbors = [cell for cell in neighbors if cell.is_empty]
@@ -135,7 +88,13 @@ class Animal_Agent(IBDI_Agent):
             self.move_to_target(best_cell.coordinate, self.beliefs['displacement'])
         else:
             print(f'AGENTE [{self.unique_id}] está preso. Intenção: ESPERAR.')
-
+    
+    def escape(self):
+        if self.cell is not None:
+            vizinho = self.cell.neighborhood.select_random_cell()
+            self.move_to_target(vizinho.coordinate, 1)
+    
+    # ---------------------- CICLO BDI ---------------------- #
     def update_desires(self):
         self.desires[0] = get_desire(self)
         pass
@@ -146,54 +105,20 @@ class Animal_Agent(IBDI_Agent):
 
     def execute_plan(self):
             match self.intention:
-                case 'DEFINIR ALVO': # Resposta ao ataque do inimigo
-                    self.set_attacked_target()
-                    return
-                
-                case 'MOVER-SE': # Resposta ao ataque do inimigo
+                case 'EXPLORAR':
+                    print(f'INTENÇÃO DO ANIMAL: {self.intention}')
                     self.explore()
                     return
                 
-                case 'ATACAR': # Resposta ao ataque do inimigo
-                    self.attack_enemy()
+                case 'FUGIR':
+                    self.escape()
                     return
-                
-                case 'APROXIMAR-SE': # Resposta ao ataque do inimigo
-                    if self.beliefs['target'] is not None:
-                        if self.beliefs['target'].cell is not None:
-                            self.move_to_target(
-                                self.beliefs['target'].cell.coordinate,
-                                self.beliefs['displacement'])
-                            return
-                        
-                    self.explore()
-                    return
-                
                 case _:
                     pass
 
-    def process_message(self):
-        for message in self.inbox:
-            match message['performative']:
-                case 'ATTACK_TARGET': # Resposta ao ataque do inimigo
-                    self.receive_attack(message)
-                
-                case _:
-                    pass
-            self.inbox.remove(message)
-
-    def process_message(self):
-        for message in self.inbox:
-            match message['performative']:
-                case 'ATTACK_TARGET': # Resposta ao ataque do inimigo
-                    self.receive_attack(message)
-                
-                case _:
-                    pass
-            self.inbox.remove(message)
+    def process_message(self): pass
 
     def step(self):
-
         print("-"*40)
         print(f"Executando step do animal...")
         print(f'INBOX: {self.inbox}')

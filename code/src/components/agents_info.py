@@ -6,7 +6,8 @@ AVATAR_PLACEHOLDER = "/assets/coelho.jpg"
 BASE_DIR = os.path.dirname(__file__)
 AVATAR_MAP = {
     "CHARACTER": os.path.join(BASE_DIR, "../assets/character.jpg"),
-    "ANIMAL": os.path.join(BASE_DIR, "../assets/lobo.jpg"),
+    "ANIMAL": os.path.join(BASE_DIR, "../assets/coelho.jpg"),
+    "ENEMY": os.path.join(BASE_DIR, "../assets/goblin.jpg"),
 }
 
 STYLE_CARD_SCROLL = {

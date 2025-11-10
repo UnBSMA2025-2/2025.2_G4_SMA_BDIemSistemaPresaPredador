@@ -91,17 +91,12 @@ enemy_beliefs1 = {
     'received_attack': None
 }
 
-boss_beliefs = {
-    'name': 'Orc',
-    'hp': 165,
-    'hpMax': 165,
+animal_beliefs = {
+    'name': 'Coelho',
+    'hp': 10,
+    'hpMax': 10,
     'is_alive': True,
-    'def': 20,
-    'atk': 25,
-    'range': 3,
+    'def': 4,
     'iniciativa': 4,
-    'displacement': 5,
-    'em_batalha': False,
-    'target': None,
-    'received_attack': None
+    'displacement': 2,
 }

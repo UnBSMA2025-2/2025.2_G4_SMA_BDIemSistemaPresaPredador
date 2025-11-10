@@ -36,7 +36,8 @@ def agent_portrayal(agent):
     portrayal = None
     if agent.type == 'CHARACTER':
         portrayal = AgentPortrayalStyle(size=50, color="black", marker="^")
-
+    elif agent.type == 'ANIMAL':
+        portrayal = AgentPortrayalStyle(size=50, color="gray")
     else:
         portrayal = AgentPortrayalStyle(size=50, color="red", marker="X")
     return portrayal

@@ -182,20 +182,10 @@ class Mob_Agent(IBDI_Agent):
                     pass
             self.inbox.remove(message)
 
-    def process_message(self):
-        for message in self.inbox:
-            match message['performative']:
-                case 'ATTACK_TARGET': # Resposta ao ataque do inimigo
-                    self.receive_attack(message)
-                
-                case _:
-                    pass
-            self.inbox.remove(message)
-
     def step(self):
 
         print("-"*40)
-        print(f"Executando step do animal...")
+        print(f"Executando step do inimigo...")
         print(f'INBOX: {self.inbox}')
         self.process_message()
         self.update_desires()

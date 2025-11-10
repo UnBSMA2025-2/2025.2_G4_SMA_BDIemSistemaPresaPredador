@@ -153,7 +153,7 @@ class Character_Agent(IBDI_Agent):
     def set_target(self):
         vizinhos = self.cell.get_neighborhood(self.beliefs['displacement']).cells
         for cell in vizinhos:
-            if len(cell.agents) != 0 and cell.agents[0].type != 'CHARACTER':
+            if len(cell.agents) != 0 and cell.agents[0].type == 'ENEMY':
                 enemy_id = cell.agents[0].unique_id
                 enemy = self.model.get_agent_by_id(enemy_id)
                 self.beliefs['target'] = enemy
@@ -175,7 +175,7 @@ class Character_Agent(IBDI_Agent):
         for i in range(1, self.model.grid.width):
             vizinhos = self.cell.get_neighborhood(i).cells
             for cell in vizinhos:
-                if len(cell.agents) != 0 and cell.agents[0].type != 'CHARACTER':
+                if len(cell.agents) != 0 and cell.agents[0].type == 'ENEMY':
                     self.beliefs['target'] = cell.agents[0]
                     self.beliefs['em_batalha'] = True  # ✅ Entrou em batalha
                     return

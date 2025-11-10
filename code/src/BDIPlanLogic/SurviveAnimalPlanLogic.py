@@ -25,8 +25,9 @@ class SurviveAnimalPlanLogic:
         def cond_other_animal_nearby(agent):
             vizinhos = agent.cell.neighborhood
             for cell in vizinhos:
-                if cell.agents[0].type == 'ANIMAL':
-                    return True
+                if len(cell.agents) != 0:
+                    if cell.agents[0].type != 'ANIMAL':
+                        return True
             return False
 
         # 2. Construir a árvore e armazenar o "motor"
@@ -50,8 +51,8 @@ class SurviveAnimalPlanLogic:
                 
         ramo_1_1 = DecisionNode(
             condition_func=cond_other_animal_nearby,
-            yes_node=acao_aproximar, 
-            no_node=acao_fugir
+            yes_node=acao_fugir, 
+            no_node=acao_aproximar
         )
         
         raiz = DecisionNode(

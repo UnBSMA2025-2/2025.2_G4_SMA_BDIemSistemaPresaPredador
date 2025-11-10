@@ -1,13 +1,13 @@
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 from mesa.discrete_space.property_layer import PropertyLayer
-from mesa.discrete_space.property_layer import PropertyLayer
 from Agents.character_agent import Character_Agent 
-from Agents.mob_agent import Mob_Agent 
+from Agents.mob_agent import Mob_Agent
+from Agents.animal_agent import Animal_Agent 
 from mocks.beliefs import (
     beliefs4,
     enemy_beliefs1,
-    boss_beliefs)
+    animal_beliefs)
 
 class RPGModel(mesa.Model):
     """
@@ -24,8 +24,6 @@ class RPGModel(mesa.Model):
         self.grid = OrthogonalMooreGrid(
             (width, height), torus=True, capacity=1, random=self.random
         )
-
-        self.waves = 0
 
         healing_item_prob = 0.035 # 5% de chance de ter item de cura em uma das células do grid
 
@@ -69,7 +67,12 @@ class RPGModel(mesa.Model):
             n=self.num_agents,
             beliefs=beliefs4
         )
-
+        Animal_Agent.create_agents(
+            model=self,
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
+            n=self.num_agents,
+            beliefs=animal_beliefs
+        )
 
     def get_agent_by_id(self, agent_id):
         try:
@@ -99,17 +102,6 @@ class RPGModel(mesa.Model):
         print("\n" + "="*40)
         print(f"--- Início do Passo {self.steps} da Simulação ---")
 
-        all_agents = list(self.agents)
-
-        sorted_agents = sorted(
-            all_agents,
-            key=lambda agent: agent.beliefs.get('iniciativa', 0),
-            reverse=True
-        )
-        
-        for agent in sorted_agents:            
-            if hasattr(agent, 'alive') and not agent.alive:
-                continue
-            agent.step()
+        self.agents.shuffle_do("step")
         
         print("="*40)
