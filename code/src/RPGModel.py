@@ -1,15 +1,13 @@
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 from mesa.discrete_space.property_layer import PropertyLayer
-from mesa.discrete_space.property_layer import PropertyLayer
 from Agents.character_agent import Character_Agent 
 from Agents.mob_agent import Mob_Agent 
+from Agents.animal_agent import Animal_Agent
 from mocks.beliefs import (
-    beliefs1, 
-    beliefs2, 
-    beliefs3,
     beliefs4,
     enemy_beliefs1)
+from mocks.npc_beliefs import slime_beliefs
 
 class RPGModel(mesa.Model):
     """
@@ -57,11 +55,11 @@ class RPGModel(mesa.Model):
         # Referência para que os agentes possam acessar a camada de cura
         self.healing_layer = healing_layer
 
-        Mob_Agent.create_agents(
+        Animal_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
-            beliefs=enemy_beliefs1
+            beliefs=slime_beliefs
         )
         # Character_Agent.create_agents(
         #     model=self,

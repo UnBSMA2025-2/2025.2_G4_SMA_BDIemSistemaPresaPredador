@@ -31,15 +31,14 @@ def propertylayer_portrayal(layer):
     )
 
 def agent_portrayal(agent):
-    color = agent.beliefs.get('color', None)
-    if color is not None:
-        portrayal = AgentPortrayalStyle(size=50, color=color)
-    # Cor padrão para agentes characters
-    elif agent.type == 'CHARACTER':
-        portrayal = AgentPortrayalStyle(size=50, color="black")
-        # Cor padrão para agentes sem cor definida e sem ser character
+    portrayal = None
+    if agent.type == 'CHARACTER':
+        portrayal = AgentPortrayalStyle(size=50, color="black", marker="^")
+
+    elif agent.type == 'ANIMAL':
+        portrayal = AgentPortrayalStyle(size=50, color="gray")
     else:
-        portrayal = AgentPortrayalStyle(size=50, color="red")
+        portrayal = AgentPortrayalStyle(size=50, color="red", marker="X")
     return portrayal
 
 model_params = {
