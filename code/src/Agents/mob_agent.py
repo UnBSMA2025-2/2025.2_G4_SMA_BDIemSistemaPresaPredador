@@ -14,7 +14,7 @@ class Mob_Agent(IBDI_Agent):
         model, 
         cell, 
         beliefs,
-        type='ANIMAL'):
+        type='ENEMY'):
         super().__init__(model)
         self.cell = cell
         self.type = type
