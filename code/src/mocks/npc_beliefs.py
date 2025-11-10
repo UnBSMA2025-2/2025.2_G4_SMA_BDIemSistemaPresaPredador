@@ -14,8 +14,8 @@ wolf_beliefs = {
 
 slime_beliefs = {
     'name': 'Slime',
-    'hp': 100,
-    'hpMax': 100,
+    'hp': 15,
+    'hpMax': 15,
     'is_alive': True,
     'def': 20,
     'atk': 20,

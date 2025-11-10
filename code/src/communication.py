@@ -9,7 +9,5 @@ class MessageDict(TypedDict):
     performative: str
     sender: int
     receiver: int
-    content: Any
-    
-    # --- Campos Opcionais ---
-    conversation_id: NotRequired[uuid] # id do diálogo da mensagem
+    content: Any    
+    conversation_id: uuid # id do diálogo da mensagem

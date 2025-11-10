@@ -1,10 +1,12 @@
 import random
-import uuid
 from Interfaces.IBDI_Agent import IBDI_Agent
 from communication import MessageDict
 from BDIPlanLogic.AnimalAgentPlanLogic import AnimalAgentPlanLogic
 from utils.move_to_agent import move_to_agent
 from utils.get_distance import get_distance
+from BDIPlanLogic.AnimalDesires import get_desire
+import copy
+
 
 class Animal_Agent(IBDI_Agent):
     """
@@ -26,8 +28,8 @@ class Animal_Agent(IBDI_Agent):
         }
 
         self.inbox = []
-        self.beliefs = beliefs
-        self.desires = ['SURVIVE']
+        self.beliefs = copy.deepcopy(beliefs)
+        self.desires = ['']
         self.intention = None
 
     def move_to_target(self, target_coordinate, displacement=1):
@@ -62,6 +64,7 @@ class Animal_Agent(IBDI_Agent):
         self.move_to_target(vizinho.coordinate, 1)
 
     def be_desperate(self):
+        if self.cell is None: return
         for step in range(self.beliefs['displacement']):
             neighbor = self.cell.neighborhood.select_random_cell()
             while not self.move_to_target(neighbor.coordinate):
@@ -74,6 +77,7 @@ class Animal_Agent(IBDI_Agent):
             self.beliefs['hp'] = newHp
         
     def flee(self):
+        if self.cell is None: return 
         neighbors = self.cell.neighborhood.cells
         cur_pos = self.cell.coordinate
         tar_pos = self.beliefs['target'].cell.coordinate
@@ -85,7 +89,7 @@ class Animal_Agent(IBDI_Agent):
                     return 
     
     def heal(self):
-        newHp = self.beliefs['hp'] + random.randint(5, 10)
+        newHp = self.beliefs['hp'] + random.randint(1, 4)
         if newHp > self.beliefs['hpMax']:
             self.beliefs['hp'] = self.beliefs['hpMax']
         else:
@@ -147,11 +151,13 @@ class Animal_Agent(IBDI_Agent):
         if not self.beliefs['is_alive']:
             self.remove()
         
+        self.beliefs['em_batalha'] = True
+
         return
 
     # -------- BDI -------- #   
     def update_desires(self):
-        pass
+        self.desires[0] = get_desire(self)
 
     def deliberate(self):
         self.intention = self.plan_library[self.desires[0]].get_intention(self)
@@ -160,7 +166,7 @@ class Animal_Agent(IBDI_Agent):
         match self.intention:
             case 'FUGIR':
                 self.flee()
-                self.set_target()
+                # self.set_target()
                 return
                         
             case 'DESESPERAR':
@@ -190,11 +196,13 @@ class Animal_Agent(IBDI_Agent):
             self.inbox.remove(message)
 
     def step(self):
+        print("-" * 40)
         print(f"Executando step do animal...")
         print(f'INBOX: {self.inbox}')
+        
         self.process_message()
         self.update_desires()
         self.deliberate()
         self.execute_plan()
         print(f'INTENÇÃO [{self.unique_id}]: {self.intention}')           
-        print("-"*40)
+        print("-" * 40)

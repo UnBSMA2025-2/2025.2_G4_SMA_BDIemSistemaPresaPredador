@@ -19,13 +19,13 @@ class RPGModel(mesa.Model):
         Inicializa o modelo, o scheduler e cria o agente único.
         """
         super().__init__(seed=seed)
-        self.message_box = {}
         self.num_agents = n
+        
         self.grid = OrthogonalMooreGrid(
             (width, height), torus=True, capacity=1, random=self.random
         )
 
-        healing_item_prob = 0.05 # 5% de chance de ter item de cura em uma das células do grid
+        healing_item_prob = 0.035 # 3.5% de chance de ter item de cura em uma das células do grid
 
         layer_name = "healing_item_spot"
 
@@ -61,18 +61,17 @@ class RPGModel(mesa.Model):
             n=self.num_agents,
             beliefs=slime_beliefs
         )
-        # Character_Agent.create_agents(
-        #     model=self,
-        #     cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
-        #     n=self.num_agents,
-        #     beliefs=beliefs1,
-        #     type='ENEMY
-        # )
         Character_Agent.create_agents(
             model=self,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n=self.num_agents,
             beliefs=beliefs4
+        )
+        Mob_Agent.create_agents(
+            model=self,
+            cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
+            n=self.num_agents,
+            beliefs=enemy_beliefs1
         )
 
     def get_agent_by_id(self, agent_id):
@@ -83,12 +82,26 @@ class RPGModel(mesa.Model):
         except:
             return None
 
+
+    def get_invalid_cells(self):
+        character_agents = self.agents.select(
+            lambda agent: agent.type == 'CHARACTER')
+        
+        celulas_invalidas = []
+
+        for agent in character_agents:
+            vizinhos = agent.cell.get_neighborhood(
+                agent.beliefs['vision']).cells
+            celulas_invalidas += vizinhos
+
+        print(f'character_agents: {celulas_invalidas}')
+        return set(celulas_invalidas)
+
+
     def step(self):
         print("\n" + "="*40)
         print(f"--- Início do Passo {self.steps} da Simulação ---")
 
-        self.message_box = {}
-        
         self.agents.shuffle_do("step")
         
         print("="*40)

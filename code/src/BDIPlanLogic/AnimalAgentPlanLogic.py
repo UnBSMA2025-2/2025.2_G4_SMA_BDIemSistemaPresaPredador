@@ -15,7 +15,7 @@ class AnimalAgentPlanLogic:
         
         def cond_low_hp(agent):
             cur_hp = (agent.beliefs['hp'] / agent.beliefs['hpMax']) 
-            return cur_hp < 0.2
+            return cur_hp < 0.3
         
         def cond_hp_not_full(agent):
             return agent.beliefs['hp'] < agent.beliefs['hpMax']

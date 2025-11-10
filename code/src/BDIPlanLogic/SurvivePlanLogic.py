@@ -40,9 +40,10 @@ class SurvivePlanLogic:
             return False
         
         def cond_friend_free(agent):
-            if len(agent.get_friends()) == 0:
-                return False
-            return not agent.get_friends()[0].agents[0].beliefs['em_batalha']
+            if agent.get_friends() is not None:
+                if len(agent.get_friends()) == 0:
+                    return False
+                return not agent.get_friends()[0].agents[0].beliefs['em_batalha']
         
         def cond_friend_distance(agent):
             distance = get_distance(
@@ -80,7 +81,7 @@ class SurvivePlanLogic:
         acao_aproximar = IntentionNode("APROXIMAR-SE")
         acao_aproximar_de_amigo = IntentionNode("APROXIMAR-SE DE AMIGO")
         acao_obter_cura = IntentionNode("OBTER CURA")
-        acao_esperar = IntentionNode("ESPERAR")
+        acao_esperar = IntentionNode("EXPLORAR")
         
         # --- PASSO B: Construir os RAMOS (de baixo para cima) ---
         
