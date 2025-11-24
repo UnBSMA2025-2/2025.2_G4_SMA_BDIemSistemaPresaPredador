@@ -52,8 +52,8 @@ A simulação permite-nos observar como estes agentes BDI autônomos gerenciam a
 [Clique aqui!](https://www.youtube.com/watch?v=MZNgeq5jD30)
 
 ## Screenshots
-![Captura de tela de 2025-11-04 08-24-08](https://drive.google.com/file/d/13q0rm-udvfWCABHmJJG0qRPkS_KDEKFS/view?usp=sharing)<br>
-![Captura de tela de 2025-11-04 08-27-22](https://drive.google.com/file/d/1G0NofoJ6uaz8TJjUcFYwW2nGaxjn94t6/view?usp=sharing)
+![Captura de tela de 2025-11-04 08-24-08](./docs/assets/Captura de tela de 2025-11-04 08-24-08.png)<br>
+![Captura de tela de 2025-11-04 08-27-22](./docs/assets/Captura de tela de 2025-11-04 08-27-22.png)
 
 
 ## Instalação 
@@ -144,7 +144,7 @@ Apresente, brevemente, como cada membro do grupo contribuiu para o projeto.
 | -- | -- | -- | -- |
 | Pedro Henrique da Silva Melo  |  Programação do modelo BDI para exploração dos agentes, criação das células com itens de cura, pesquisa científica para artigos voltados para sistemas multi-agentes comportamentais, criação do resumo, abstract, palavras-chave e introdução do artigo de publicação científica | Boa | [Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/5)
 | 	Marllon Fausto Cardoso  | Idealização e implementação da base lógica dos agentes BDI e sua comunicação: <br>1. Implementação das classes da árvore de decisão (estrutura e nós);<br>2. Implementação da árvore de decisão de Sobrevivência do character_agent;<br>3. Implementação da árvore de decisão de Combate do character_agent e seus métodos de ação;<br>4. Implementação da árvore de decisão de Reação a Ataques do mob_agent e seus métodos de ação;<br> 5. Implementação da interface IBDI_Agent que estabelece o contrato da lógica BDI para todos os agentes do modelo;<br>6. Implementação da lóica de troca de mensagens entre os agentes do modelo;   | Excelente | [Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/1)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/2)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/3)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/4/commits)<br>
-| João Pedro Rodrigues Morbeck |  Criação dos agentes enemy e animal, criação dos planos lógicos de sobrevivência do enemy e animal | Regular | [Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/6)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/12)<br>
+| João Pedro Rodrigues Morbeck |  Criação dos agentes enemy e animal, criação dos planos lógicos de sobrevivência do enemy e animal, pesquisa científica para artigos voltados para sistemas multi-agentes BDI, criação da metodologia, título e formatação do artigo de publicação científica | Boa | [Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/6)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/12)<br>
 | Thiago Cerqueira Borges  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | [Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/10)<br>[Pull Request](https://github.com/UnBSMA2025-2/2025.2_G4_SMA_BDIemSistemaPresaPredador/pull/11)<br>
 
 ## Outros
