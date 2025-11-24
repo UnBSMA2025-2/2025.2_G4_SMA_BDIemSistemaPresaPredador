@@ -13,13 +13,9 @@
 | 19/0117508  |  Thiago Cerqueira Borges |
 
 ## Sobre 
-Descreva o seu projeto em linhas gerais. 
-Use referências, links, que permitam conhecer um pouco mais sobre o projeto.
-Capriche nessa seção, pois ela é a primeira a ser lida pelos interessados no projeto.
-
 O nosso projeto simula um mundo de RPG (Role-Playing Game) simples utilizando a arquitetura de Sistemas Multiagentes (MAS) e o framework MESA em Python. O objetivo principal não é criar um jogo, mas sim modelar o comportamento emergente de agentes inteligentes num ambiente de mundo aberto.
 
-O núcleo do nosso sistema é a implementação do modelo de agência **BDI (Belief-Desire-Intention)**:
+O núcleo do nosso sistema é a busca de uma implementação do modelo de agência **BDI (Belief-Desire-Intention)**:
 
 ## Modelo BDI
 
