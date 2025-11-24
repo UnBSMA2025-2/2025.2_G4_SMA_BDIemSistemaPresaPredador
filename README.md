@@ -52,8 +52,8 @@ A simulação permite-nos observar como estes agentes BDI autônomos gerenciam a
 [Clique aqui!](https://www.youtube.com/watch?v=MZNgeq5jD30)
 
 ## Screenshots
-![Captura de tela de 2025-11-04 08-24-08](./docs/assets/Captura de tela de 2025-11-04 08-24-08.png)<br>
-![Captura de tela de 2025-11-04 08-27-22](./docs/assets/Captura de tela de 2025-11-04 08-27-22.png)
+![Exemplo do passo inicial da simulação com n = 3.](docs/assets/passo-inicial.png)<br/>
+![Exemplo do passo 1 da simulação com n = 3](docs/assets/passo1.png)
 
 
 ## Instalação 
